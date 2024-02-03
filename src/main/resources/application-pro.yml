@@ -74,7 +74,7 @@ mybatis-plus:
   # xml文件路径
   mapper-locations: classpath:mapper/*/*.xml
   # 实体类路径
-  type-aliases-package: com.luos.*.*.entity
+  type-aliases-package: com.asurplus.*.*.entity
   configuration:
     # 驼峰转换
     map-underscore-to-camel-case: true
