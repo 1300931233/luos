@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>400</title>
+    <link rel="stylesheet" th:href="@{/css/exception.css}" media="all">
+</head>
+<body>
+<div class="error">
+    <div class="container-floud">
+        <div style="text-align: center">
+            <div class="container-error-404">
+                <div class="clip">
+                    <div class="shadow">
+                        <span class="digit thirdDigit"></span>
+                    </div>
+                </div>
+                <div class="clip">
+                    <div class="shadow">
+                        <span class="digit secondDigit"></span>
+                    </div>
+                </div>
+                <div class="clip">
+                    <div class="shadow">
+                        <span class="digit firstDigit"></span>
+                    </div>
+                </div>
+                <div class="msg">OH!
+                    <span class="triangle"></span>
+                </div>
+            </div>
+            <h2 class="h1">很抱歉，这是一个错误的请求</h2>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/js/excepiton.js}"></script>
+<script>
+    load(4, 0, 0);
+</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>条形码</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="ok-body">
+            <blockquote class="layui-elem-quote">
+                <p>js生成二维码。（注意加入了两个生成二维码的工具类,使用其中一个即可）</p>
+                <p><a target="_blank" href="https://github.com/alphatr/jquery-qrcode">jQqrcode</a>
+                <p><a target="_blank" href="https://github.com/davidshimjs/qrcodejs">qrcode</a>
+                </p>
+            </blockquote>
+            <pre lay-title="JavaScript">
+var q = new qrcode($("#qrcode")[0], {
+   width: 200,
+   height: 200,
+   text: "http://ok-admin.xlbweb.cn/"
+});
+var q2 = $("#qrcodeCanvas3").qrcode({
+   width: "200",
+   height: "200",
+   background: "transparent",    //二维码的后景色（默认透明色）
+   foreground: "#000000",        //二维码的前景色（默认黑色）
+   text: "http://ok-admin.xlbweb.cn/"
+});
+   </pre>
+            <div class="qr-box">
+                <div id="qrcode"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['code', 'jquery', 'qrcode'], function () {
+        var code = layui.code,
+            qrcode = layui.qrcode,
+            $ = layui.jquery;
+        code({
+            elem: "pre",
+            title: "代码示例",
+            about: false
+        });
+        var q = new qrcode($("#qrcode")[0], {
+            width: 200,
+            height: 200,
+            text: "https://www.baidu.com/"
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,105 @@
+body {
+    margin: 10px 10px 10px 10px;
+    background: #f2f2f2;
+}
+
+.layuimini-container {
+    border: 1px solid #f2f2f2;
+    border-radius: 5px;
+    background-color: #ffffff
+}
+
+.layuimini-main {
+    margin: 10px 10px 10px 10px;
+}
+
+/**必填红点 */
+.layuimini-form > .layui-form-item > .required:after {
+    content: '*';
+    color: red;
+    position: absolute;
+    margin-left: 4px;
+    font-weight: bold;
+    line-height: 1.8em;
+    top: 6px;
+    right: 5px;
+}
+
+.layuimini-form > .layui-form-item > .layui-form-label {
+    width: 120px !important;
+}
+
+.layuimini-form > .layui-form-item > .layui-input-block {
+    margin-left: 150px !important;
+}
+
+.layuimini-form > .layui-form-item > .layui-input-block > tip {
+    display: inline-block;
+    margin-top: 10px;
+    line-height: 10px;
+    font-size: 10px;
+    color: #a29c9c;
+}
+
+/**搜索框*/
+.layuimini-container .table-search-fieldset {
+    margin: 0;
+    border: 1px solid #e6e6e6;
+    border-radius: 4px;
+    padding: 10px 20px 5px 20px;
+    color: #6b6b6b;
+}
+
+.layuimini-container .table-search-fieldset .layui-form-item {
+    margin: 0;
+}
+
+/**自定义滚动条样式 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px
+}
+
+::-webkit-scrollbar-track {
+    background-color: transparent;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius: 2em;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #1890ff;
+    -webkit-border-radius: 2em;
+    -moz-border-radius: 2em;
+    border-radius: 2em
+}
+
+.toolbar_span {
+    display: contents;
+    text-align: center;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    white-space: nowrap;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.toolbar_span a {
+    cursor: pointer;
+    color: #1E9FFF !important;
+}
+
+.toolbar_span div {
+    box-sizing: border-box;
+    width: 1px;
+    display: inline-block;
+    height: .9em;
+    vertical-align: middle;
+    margin: 0 5px;
+    background: #e8e8e8;
+}
+
+.avatar-show {
+    height: 32px;
+    width: 32px;
+}

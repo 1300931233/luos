@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户授权</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layui-form-item .layui-input-company {
+            width: auto;padding-right: 10px;line-height: 38px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <form class="layui-form" action="" lay-filter="formDemo">
+            <div class="layui-form layuimini-form">
+                <input type="hidden" name="smanId">
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">账户</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="smanAccount" lay-verify="required" lay-reqtext="请输入用户账号" placeholder="请输入" class="layui-input" disabled>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">角色</label>
+                    <div class="layui-input-block">
+                        <div id="demo1" class="xm-select-demo"></div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="saveBtn" shiro:hasPermission="sys:user:info:auth"> 保存 </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form','notice', 'xmSelect'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            layer = layui.layer,
+            xmSelect = layui.xmSelect,
+            notice = layui.notice;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-manager/';
+
+        form.val("formDemo", [[${data}]]);
+
+        redenXmSelect();
+
+        var demo1;
+        function redenXmSelect() {
+            Asurplus.get({
+                url: baseUrl + 'listRoleForSelect/' + $('input[name="smanId"]').val(),
+                succMsg: true
+            }, (res) => {
+                demo1 = xmSelect.render({
+                    el: '#demo1',
+                    // 开启搜索
+                    filterable: true,
+                    data: res.data,
+                    theme:{
+                        color:'#1E9FFF'
+                    },
+                })
+            });
+        }
+
+        // 监听提交
+        form.on('submit(saveBtn)', function (res) {
+            var selectArr = demo1.getValue('valueStr');
+            if(!selectArr){
+                notice.warning('请选择角色信息');
+                return false;
+            }
+            var data = res.field;
+            Asurplus.get({
+                url: baseUrl + 'auth/' + data.smanId + '/' + selectArr
+            }, () => {
+                setTimeout(function () {
+                    var windowIndex = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(windowIndex);
+                }, 1500)
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

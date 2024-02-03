@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asurplus.console.system.mapper.SysHandleLogMapper">
+
+    <select id="listSysHandleLogVO" resultType="com.asurplus.console.system.vo.SysHandleLogVO">
+        SELECT
+            a.*,
+            b.`SMAN_NAME` AS create_user_name
+        FROM
+            sys_handle_log a
+            LEFT JOIN sys_manager b ON ( a.SHLO_CREATEUSER_ID = b.SMAN_ID )
+        ${ew.customSqlSegment}
+    </select>
+</mapper>

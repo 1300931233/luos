@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>参数配置</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layui-form-item .layui-input-company {
+            width: auto;padding-right: 10px;line-height: 38px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <form class="layui-form" action="" lay-filter="formDemo">
+            <div class="layui-form layuimini-form">
+                <input type="hidden" name="spcoId">
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">默认登录密码</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="spcoDefaultPassword" placeholder="请输入" class="layui-input" lay-verify="required" lay-reqtext="请输入默认登录密码" maxlength="32">
+                        <tip>系统用户的默认登录密码，例如：123456</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">登录验证码长度</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="spcoLoginCodeLen" placeholder="请输入" class="layui-input" min="4" max="8">
+                        <tip>登录界面验证码的长度，默认为4位</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">登录验证码类型</label>
+                    <div class="layui-input-block">
+                        <select name="spcoLoginCodeType">
+                            <option th:each="item : ${login}" th:value="${item.sddeCode}" th:text="${item.sddeName}"></option>
+                        </select>
+                        <tip>登录界面验证码的类型，默认为纯数字</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">短信验证码长度</label>
+                    <div class="layui-input-block">
+                        <input type="number" name="spcoSmsCodeLen" placeholder="请输入" class="layui-input" min="4" max="8">
+                        <tip>短信验证码的长度，默认为4位</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">短信验证码类型</label>
+                    <div class="layui-input-block">
+                        <select name="spcoSmsCodeType">
+                            <option th:each="item : ${sms}" th:value="${item.sddeCode}" th:text="${item.sddeName}"></option>
+                        </select>
+                        <tip>短信验证码的类型，默认为纯数字</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否自动审核</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="spcoAutoAudit" value="1" title="是">
+                        <input type="radio" name="spcoAutoAudit" value="0" title="否" checked>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="saveBtn" shiro:hasPermission="sys:param-conf:edit"> 保存 </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form','notice'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            layer = layui.layer,
+            notice = layui.notice;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'system/sys-param-conf/';
+
+        form.val("formDemo", [[${data}]]);
+
+        // 监听提交
+        form.on('submit(saveBtn)', function (res) {
+            var data = res.field;
+            if(4 > data.spcoLoginCodeLen || data.spcoLoginCodeLen > 8){
+                notice.warning('登录验证码长度介于4-8之间');
+                return false;
+            }
+            if(4 > data.spcoSmsCodeLen || data.spcoSmsCodeLen > 8){
+                notice.warning('短信验证码长度介于4-8之间');
+                return false;
+            }
+            Asurplus.post({
+                url: baseUrl + 'update',
+                data: JSON.stringify(data)
+            }, () => {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500)
+            })
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

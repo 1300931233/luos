@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>通知公告</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="ok-body">
+            <blockquote class="layui-elem-quote">
+                <p>notice 通知公告组件</p>
+            </blockquote>
+            <pre>
+			// Step1. 引入依赖
+			let notice = layui.notice;.
+
+			<br/>
+			// Step2. 使用
+			$("#notice").click(function () {
+				notice.success("消息提示");
+			});
+
+			$("#notice2").click(function () {
+				notice.info("消息提示");
+			});
+
+			$("#notice3").click(function () {
+				notice.warning("消息提示");
+			});
+
+			$("#notice4").click(function () {
+				notice.error("消息提示");
+			});
+		</pre>
+            <button type="button" class="layui-btn" id="notice">消息提示</button>
+            <button type="button" class="layui-btn" id="notice2">成功提示</button>
+            <button type="button" class="layui-btn" id="notice3">警告提示</button>
+            <button type="button" class="layui-btn" id="notice4">错误提示</button>
+            <button type="button" class="layui-btn" id="notice5">clear</button>
+            <button type="button" class="layui-btn" id="notice6">remove</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(["code", "notice"], function () {
+        let code = layui.code;
+        let notice = layui.notice;
+        let $ = layui.jquery;
+
+        code({
+            elem: "pre",
+            title: "代码示例",
+            about: false
+        });
+
+        $("#notice").click(function () {
+			notice.info("消息提示");
+        });
+
+        $("#notice2").click(function () {
+			notice.success("消息提示");
+		});
+
+        $("#notice3").click(function () {
+            notice.warning("消息提示");
+        });
+
+        $("#notice4").click(function () {
+            notice.error("消息提示");
+        });
+
+        $("#notice5").click(function () {
+            notice.clear();
+        });
+
+        $("#notice6").click(function () {
+            notice.remove();
+        });
+    });
+</script>
+</body>
+</html>

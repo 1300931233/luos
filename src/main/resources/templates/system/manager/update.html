@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>修改用户</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layui-form-item .layui-input-company {
+            width: auto;padding-right: 10px;line-height: 38px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <form class="layui-form" action="" lay-filter="formDemo">
+            <div class="layui-form layuimini-form">
+                <input type="hidden" name="smanId">
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">账户</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="smanAccount" lay-verify="required" lay-reqtext="请输入用户账号" placeholder="请输入" class="layui-input" disabled>
+                        <tip>作为用户登录系统的唯一凭证</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="smanName" lay-verify="required" lay-reqtext="请输入用户名称" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">头像</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" name="smanAvatar">
+                        <div style="height: 100px;width: 100px;position: relative;">
+                            <input type="file" accept="image/*" id="pic-input" style="position: absolute;left: 0;top: 0;opacity: 0;filter: alpha(opacity=0);height: 100%;width: 100%;z-index: 99">
+                            <input type="hidden" name="change" id="change">
+                            <img th:src="${data.smanAvatar}" alt="" id="pic-img" style="height: 100%;width: 100%;position: absolute;left: 0;top: 0;border: 1px solid #1E9FFF;border-radius: 50%">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="smanPhone" lay-verify="required|phone" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">性别</label>
+                    <div class="layui-input-block">
+                        <select name="smanSex">
+                            <option value="">请选择</option>
+                            <option th:each="item : ${sex}" th:value="${item.sddeCode}" th:text="${item.sddeName}"></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">邮箱地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="smanEmail" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="saveBtn" shiro:hasPermission="sys:user:info:edit"> 保存 </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form','notice'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            layer = layui.layer,
+            notice = layui.notice;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-manager/';
+
+        form.val("formDemo", [[${data}]]);
+
+        $('#pic-input').change(function () {
+            var formData = new FormData();
+            var OriginalFile = $("#pic-img").attr("src");
+            formData.append("files", $("#pic-input")[0].files[0]);
+            formData.append("OriginalFile",OriginalFile);
+            Asurplus.upload({
+                url: ctxPath + 'sys/sys-minio/uploadFileAjax',
+                data: formData,
+                dir: 'system'
+            }, (res) => {
+                $("input[name='smanAvatar']").val(res.data);
+                $('#pic-img').attr('src', res.data);
+            });
+            $("#change").val(1);
+        });
+
+        // 监听提交
+        form.on('submit(saveBtn)', function (res) {
+            console.log(res.field.change);
+            var data = res.field;
+
+            Asurplus.post({
+                url: baseUrl + 'update',
+                data: JSON.stringify(data)
+            }, function () {
+                setTimeout(function () {
+                    var windowIndex = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(windowIndex);
+                }, 1500)
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

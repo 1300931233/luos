@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>操作日志列表</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息(<b style="color: #1E9FFF;cursor: pointer">收起--展开</b>)</legend>
+            <form class="layui-form layui-form-pane" id="search-form" lay-filter="search-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">操作人</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="shloCreateUserId" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-sm layui-bg-blue" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索 </button>
+                        <button type="submit" class="layui-btn layui-btn-sm layui-btn-primary" lay-submit lay-filter="data-reset-btn"><i class="layui-icon">&#xe669;</i> 重 置 </button>
+                    </div>
+                </div>
+            </form>
+        </fieldset>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm" lay-event="delete" shiro:hasPermission="sys:handle:log:del"><i class="layui-icon">&#xe640;</i> 删除</button>
+            </div>
+        </script>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-handle-log/';
+
+        var currTable = Asurplus.tableRender({
+            table: table,
+            url: baseUrl + 'list',
+            cols: [
+                [
+                {field: '', title: '', type:'checkbox', templet: function (d) {return d.LAY_TABLE_INDEX + 1;}},
+                {field: 'shloIp', title: 'IP'},
+                {field: 'shloLocation', title: '位置'},
+                {field: 'shloModel', title: '模块'},
+                {field: 'shloUrl', title: '路径'},
+                // {field: 'shloParam', title: '参数'},
+                {field: 'shloSpendTime', title: '耗时'},
+                {field: 'createUserName', title: '操作人'},
+                {field: 'shloCreateTime', title: '操作时间'}
+            ]
+            ]
+        });
+
+        // 表头工具
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            var checkStatus = table.checkStatus(obj.config.id); //获取选中行状态
+            switch(obj.event) {
+                case 'delete':
+                    var data = checkStatus.data;  //获取选中行数据
+                    if (data.length == 0) {
+                        layer.msg('请选择资源！', {icon: 7});
+                        return false;
+                    }
+                    layer.confirm('确认删除?', {
+                        btn: ['确定'],
+                        title: '提示'
+                    }, function(){
+                        Asurplus.post({
+                            url: baseUrl + 'batchDelete',
+                            data:JSON.stringify(data)
+                        }, () => {
+                            currTable.reload();
+                        });
+                    });
+                    break;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

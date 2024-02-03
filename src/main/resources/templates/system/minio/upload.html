@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <style>
+        hr{
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body style="margin-left: 50px">
+<hr>
+<p>form提交</p>
+<hr>
+<form accept-charset="UTF-8" th:action="@{/sys/sys-minio/uploadFile}" method="post" enctype="multipart/form-data" target="_self">
+    文件:<input type="file" name="file"/>
+    <input type="submit" value="上传"/>
+</form>
+<hr>
+<p>ajax提交</p>
+<hr>
+<div style="height: 200px;width: 200px;position: relative;border: 1px #e2e2e2 solid">
+    <input type="file" accept="image/*" id="imgUpload" style="position: absolute;left: 0;top: 0;opacity: 0;filter: alpha(opacity=0);height: 100%;width: 100%;z-index: 99">
+    <img alt="" id="picImg" style="height: 100%;width: 100%;position: absolute;left: 0;top: 0;">
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+    layui.use(['form','layer'], function () {
+        var $ = layui.jquery
+            ,form = layui.form
+            ,layer = layui.layer;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-minio/';
+
+        $('#imgUpload').change(function () {
+            var formData = new FormData();
+            formData.append("files", $("#imgUpload")[0].files[0]);
+            Asurplus.upload({
+                url: baseUrl + 'uploadFileAjax',
+                data : formData
+            }, function (res) {
+                $('#picImg').attr('src',res.data);
+            });
+        });
+    });
+</script>
+</body>
+</html>

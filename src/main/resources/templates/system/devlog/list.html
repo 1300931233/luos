@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>开发日志</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <ul class="layui-timeline">
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">11月10日</h3>
+                    <ul>
+                        <li>数据字典存入Redis数据更改为HashMap，减少key的数量，提升redis的扫描速度</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">11月04日</h3>
+                    <ul>
+                        <li>系统集成发邮件功能，支持发送文本、HTML、图片、附件、模板等方式的邮件</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">10月25日</h3>
+                    <ul>
+                        <li>系统引入裁剪上传图片组件</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">10月20日</h3>
+                    <ul>
+                        <li>增加系统配置功能，可动态配置该系统的标题、图标、关键词、备案号、名称、LOGO等信息</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">10月18日</h3>
+                    <ul>
+                        <li>Redis发布订阅，可实现消息队列</li>
+                        <li>Redis监听key过期事件</li>
+                        <li>Redis更改存入键值的序列化方式，支持存入对象</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">10月13日</h3>
+                    <ul>
+                        <li>系统引入新的前端组件，如：消息通知、通知公告、数字步进器等</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">09月22日</h3>
+                    <ul>
+                        <li>首页增加锁屏功能，方便用户在离开桌面的时候起到保护作用</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">09月15日</h3>
+                    <ul>
+                        <li>首页增加日期，时间，提示语等信息</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">08月24日</h3>
+                    <ul>
+                        <li>将用户菜单权限数据存入session</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">08月18日</h3>
+                    <ul>
+                        <li>将项目上传至 Gitee，让更多的人能够了解 SpringBoot-Mini</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">08月11日</h3>
+                    <ul>
+                        <li>增加了数据库详情功能，可以查看表格的字段信息，如：字段名，字段说明，字段类型等</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">08月11日</h3>
+                    <ul>
+                        <li>增加了数据库管理功能，可以在线查看数据库表格信息，如：表明，表说明，数据大小等</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">08月06日</h3>
+                    <ul>
+                        <li>增加了 MINIO 下载文件的方法</li>
+                        <li>改进了 MINIO 上传文件的方法</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">08月03日</h3>
+                    <ul>
+                        <li>项目划分模块，优化 MyBatis-Plus 自动生成代码插件</li>
+                        <li>整合了 jeecgboot 的导出 Excel 功能，支持字典翻译，一键导出</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">07月31日</h3>
+                    <ul>
+                        <li>增加 Redis 在线管理功能，可实现对 Redis 数据的查询，新增，修改，删除等</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">07月28日</h3>
+                    <ul>
+                        <li>增加完善个人资料，修改密码功能</li>
+                        <li>新增项目开发日志，记录每次更新内容（以后回头看，还是挺有意义的）</li>
+                        <li>想了想，还是做了登录日志（虽然我觉得没什么意义），可以获取用户真实 IP 地址，以及地理位置信息等</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">07月27日</h3>
+                    <ul>
+                        <li>使用了自定义启动 banner，（花里胡哨）</li>
+                        <li>项目配置文件分类，分为“开发环境”与“生产环境”，方便线上部署</li>
+                        <li>项目使用 google 的 zxing 做二维码生成，并实现二维码中 Logo 图片生成</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">07月21日</h3>
+                    <ul>
+                        <li>新增系统启动任务，系统启动时，启动定时任务</li>
+                        <li>项目引入 quartz 实现定时任务，并实现页面启动，管理等</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">07月15日</h3>
+                    <ul>
+                        <li>项目引入 Ehcache，将数据字典通过注解缓存在 Ehcache 中</li>
+                        <li>通过 AOP 注解方式实现“数据字典”功能</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">07月10日</h3>
+                    <ul>
+                        <li>完成系统模块（用户、角色、权限等）的功能</li>
+                        <li>自定义密码加密规则，使用 MD5，迭代 6 次</li>
+                        <li>项目引入 apache-shiro，并实现权限管理，登录授权等操作</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">07月03日</h3>
+                    <ul>
+                        <li>配置了系统统一异常处理界面，例如：400,404,500等异常界面</li>
+                        <li>项目使用 knife4j 作为接口文档，相比 Swagger2，knife4j 的界面更好看</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">07月02日</h3>
+                    <ul>
+                        <li>项目引入一些自己写的常用工具类，例如：时间格式化、随机数处理、浮点数计算等</li>
+                        <li>项目引入 Hutool 作为工具类</li>
+                        <li>项目引入文件服务器 Minio，文件统一存放文件服务器中</li>
+                        <li>项目引入 Redis，做数据缓存</li>
+                    </ul>
+                </div>
+            </li>
+            <li class="layui-timeline-item">
+                <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                <div class="layui-timeline-content layui-text">
+                    <h3 class="layui-timeline-title">07月01日</h3>
+                    <ul>
+                        <li>前端框架使用基于 layui 开发的 layuimini 后台管理模板</li>
+                        <li>配置全局事务管理</li>
+                        <li>配置 Mybatis-Plus 分页插件</li>
+                        <li>引入 Mybatis-Plus，实现自动生成代码</li>
+                        <li>搭建项目，项目名为博客名：asurplus</li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="luos:war">
+    <output-path>$PROJECT_DIR$/target</output-path>
+    <properties id="maven-jee-properties">
+      <options>
+        <module>luos</module>
+        <packaging>war</packaging>
+      </options>
+    </properties>
+    <root id="archive" name="ksxt.war">
+      <element id="artifact" artifact-name="luos:war exploded" />
+    </root>
+  </artifact>
+</component>

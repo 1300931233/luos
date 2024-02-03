@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>菜单列表</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+<!--        <script type="text/html" id="toolbarDemo">-->
+        <div class="layui-btn-container" style="display: inline-block;">
+            <div class="layui-btn-container">
+                <button id="add" class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add" shiro:hasPermission="sys:permission:info:add"><i class="layui-icon">&#xe654;</i> 新增 </button>
+                <button id="refresh" class="layui-btn layui-btn-normal layui-btn-sm" lay-event="refresh"><i class="layui-icon">&#xe669;</i> 刷新 </button>
+                <button id="expand" class="layui-btn layui-btn-normal layui-btn-sm" lay-event="expand"><i class="layui-icon">&#xe625;</i>展开</button>
+                <button id="fold" class="layui-btn layui-btn-normal layui-btn-sm" lay-event="fold"><i class="layui-icon">&#xe623;</i>收起</button>
+            </div>
+        </div>
+        <!--</script>-->
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            {{#
+            var html='<span class="toolbar_span">';
+                html+='<a src="javascript:void(0)" lay-event="delFlag" shiro:hasPermission="sys:permission:info:del">删除</a>';
+                if(0 == d.spinStatus){
+                html+= '<a src="javascript:void(0)" lay-event="status1" shiro:hasPermission="sys:permission:info:status"><div></div>禁用</a>'
+                }else if(1 == d.spinStatus){
+                html+= '<a src="javascript:void(0)" lay-event="status0" shiro:hasPermission="sys:permission:info:status"><div></div>启用</a>'
+                }
+                html+='<a src="javascript:void(0)" lay-event="update" shiro:hasPermission="sys:permission:info:edit"><div></div>编辑</a>';
+                return html+'</span>'
+            }}
+        </script>
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+    var ctxPath = /*[[@{/}]]*/;
+
+    layui.config({
+        base:ctxPath+ '/treetable/2.x/treeTable/'      //自定义layui组件的目录
+    }).extend({ //设定组件别名
+        treeTable:   'treeTable', // 如果相同可以不设置别名
+    });
+
+    //获取添加页面pid
+    var sppid = null;
+    var spid = null;
+    function getValue(ppid,pid){
+        sppid = ppid;
+        spid = pid;
+    }
+
+    layui.use(['form', 'table','notice', 'treeTable'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            notice = layui.notice,
+            treeTable = layui.treeTable,
+            table = layui.table;
+
+        //var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-permission-info/';
+
+            var insTb = treeTable.render({
+                elem: '#currentTableId',
+                toolbar: '#toolbarDemo',
+                tree: {
+                    iconIndex: 1,  // 折叠图标显示在第几列
+                    idName: 'spinId',  // 自定义id字段的名称
+                    pidName: 'spinPid',  // 自定义pid字段的名称
+                    haveChildName: 'haveChild',  // 自定义标识是否还有子节点的字段名称
+                    isPidData: true,  // 是否是pid形式数据
+                },
+                cols: [
+                        {type: 'numbers'},
+                        {field: 'spinName', minWidth: 250,width:250, title: '名称'},
+                        {field: 'spinIcon', width:100, title: '图标', templet: function (d) {
+                                if(!!d.spinIcon){
+                                    return '<i class="'+d.spinIcon+'"></i>';
+                                }else {
+                                    return '';
+                                }
+                            }},
+                        {field: 'spinSign', minWidth: 250,width:250,title: '标识'},
+                        {field: 'spinHref', title: '链接'},
+                        {field: 'spinTarget', width:100,title: '打开方式'},
+                        {field: 'spinType', title: '类型', templet: function (d) {
+                                if(0 == d.spinType){
+                                    return '<span class="layui-badge layui-bg-cyan">目录</span>';
+                                }else if(1 == d.spinType){
+                                    return '<span class="layui-badge layui-bg-blue">菜单</span>';
+                                }else if(2 == d.spinType){
+                                    return '按钮';
+                                }
+                            }},
+                        {field: 'spinSort', title: '排序(值越小，越靠前)', edit: 'number'},
+                        {field: 'spinDescript', title: '描述'},
+                        {field: 'spinStatusText',width:100, title: '状态'},
+                        {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center"}
+                ],
+                reqData: function (data, callback) {
+                    var pid = data?data.spinId:0;
+                    $.get(baseUrl + 'list?pid='+pid, function (res) {
+                        callback(res.data);
+                    });
+                }
+            });
+
+        // 监听单元格编辑
+        treeTable.on('edit(currentTableId)', function(obj){
+            var value = obj.value
+                ,data = obj.data
+                ,field = obj.field;
+            if(!/^\+?[0-9][0-9]*$/.test(value)){
+                notice.error('请输入数字，且大于0');
+                return false;
+            }
+            var index = layer.load(2, {shade: 0.1});
+            $.ajax({
+                url: baseUrl + 'updateSort/' + data.spinId + '/' + value,
+                type: 'get',
+                dataType: 'json',
+                success: function (res) {
+                    layer.close(index);
+                    if (200 == res.code) {
+                        layer.closeAll('dialog');
+                        notice.success(res.msg);
+                        if(data.spinPid==0){
+                            insTb.refresh();
+                        }else
+                            insTb.refresh(data.spinPid);
+                    } else {
+                        notice.error(res.msg);
+                    }
+                },
+                error: function (res) {
+                    layer.close(index);
+                    notice.error("服务器异常！");
+                }
+            });
+        });
+
+        // 全部展开
+        $('#expand').click(function () {
+            insTb.expandAll();
+        });
+
+        // 全部折叠
+        $('#fold').click(function () {
+            insTb.foldAll();
+        });
+        // 新增
+        $("#add").click(function () {
+            layer.open({
+                type: 2,
+                title: '新增',
+                shadeClose: true,
+                shade: 0.5,
+                area: ['45%', '100%'],
+                content: baseUrl + 'add',
+                offset: 'r',
+                anim: 2,
+                end: function(index, layero){
+                    if(null != spid && ""!=spid){
+                        return insTb.refresh(spid);
+                    }
+                    if(null != sppid && ""!=sppid){
+                        return insTb.refresh(sppid);
+                    }
+                    insTb.refresh();
+                }
+            });
+            return false;
+        });
+        //刷新
+        $("#refresh").click(function () {
+            insTb.refresh();
+        })
+
+
+
+        // treeTable.on('toolbar(currentTableFilter)', function (obj) {
+        //     if (obj.event === 'add') {
+        //         layer.open({
+        //             type: 2,
+        //             title: '新增',
+        //             shadeClose: true,
+        //             shade: 0.5,
+        //             area: ['45%', '100%'],
+        //             content: baseUrl + 'add',
+        //             offset: 'r',
+        //             anim: 2,
+        //             end: function(index, layero){
+        //                 tableRender();
+        //             }
+        //         });
+        //         return false;
+        //     }else if(obj.event === 'expand'){
+        //         isShow = true;
+        //         treetable.expandAll('#currentTableId');
+        //     }else if(obj.event === 'fold'){
+        //         isShow = false;
+        //         treetable.foldAll('#currentTableId');
+        //     }
+        // });
+
+        treeTable.on('tool(currentTableId)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'update') {
+                layer.open({
+                    type: 2,
+                    title: '修改',
+                    shadeClose: true,
+                    shade: 0.5,
+                    area: ['45%', '100%'],
+                    content: baseUrl + 'update/'+data.spinId,
+                    offset: 'r',
+                    anim: 2,
+                    end: function(index, layero){
+                        if(data.spinPid != 0)
+                            insTb.refresh(data.spinPid);
+                        else
+                            insTb.refresh();
+                    }
+                });
+                return false;
+            } else if (obj.event === 'delFlag') {
+                layer.confirm('确认删除该数据以及所有子级数据', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    var index = layer.load(2, {shade: 0.1});
+                    $.ajax({
+                        url: baseUrl + 'delete/'+data.spinId,
+                        type: 'get',
+                        dataType: 'json',
+                        success: function (res) {
+                            layer.close(index);
+                            if (200 == res.code) {
+                                layer.closeAll('dialog');
+                                notice.success(res.msg);
+                                if(data.spinPid != 0)
+                                    insTb.refresh(data.spinPid);
+                                else
+                                    insTb.refresh();
+                            } else {
+                                notice.error(res.msg);
+                            }
+                        },
+                        error: function (res) {
+                            layer.close(index);
+                            notice.error("服务器异常！");
+                        }
+                    });
+                });
+                return false;
+            } else if (obj.event === 'status0') {
+                layer.confirm('确认启用该数据以及所有子级数据', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    var index = layer.load(2, {shade: 0.1});
+                    $.ajax({
+                        url: baseUrl + 'updateStatus/' + data.spinId + '/0',
+                        type: 'get',
+                        dataType: 'json',
+                        success: function (res) {
+                            layer.close(index);
+                            if (200 == res.code) {
+                                layer.closeAll('dialog');
+                                notice.success(res.msg);
+                                if(data.spinPid != 0)
+                                    insTb.refresh(data.spinPid);
+                                else
+                                    insTb.refresh();
+                            } else {
+                                notice.error(res.msg);
+                            }
+                        },
+                        error: function (res) {
+                            layer.close(index);
+                            notice.error("服务器异常！");
+                        }
+                    });
+                });
+                return false;
+            } else if (obj.event === 'status1') {
+                layer.confirm('确认禁用该数据以及所有子级数据', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    var index = layer.load(2, {shade: 0.1});
+                    $.ajax({
+                        url: baseUrl + 'updateStatus/' + data.spinId + '/1',
+                        type: 'get',
+                        dataType: 'json',
+                        success: function (res) {
+                            layer.close(index);
+                            if (200 == res.code) {
+                                layer.closeAll('dialog');
+                                notice.success(res.msg);
+                                if(data.spinPid != 0)
+                                    insTb.refresh(data.spinPid);
+                                else
+                                    insTb.refresh();
+                            } else {
+                                notice.error(res.msg);
+                            }
+                        },
+                        error: function (res) {
+                            layer.close(index);
+                            notice.error("服务器异常！");
+                        }
+                    });
+                });
+                return false;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

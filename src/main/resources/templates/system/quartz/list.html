@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>定时任务列表</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息(<b style="color: #1E9FFF;cursor: pointer">收起--展开</b>)</legend>
+            <form class="layui-form layui-form-pane" id="search-form" lay-filter="search-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">任务类名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="squaClassName" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">任务状态</label>
+                        <div class="layui-input-inline">
+                            <select name="squaQuartzStatus">
+                                <option value="" selected>请选择</option>
+                                <option th:each="item : ${status}" th:value="${item.sddeCode}" th:text="${item.sddeName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <select name="squaStatus">
+                                <option value="" selected>请选择</option>
+                                <option th:each="item : ${dataStatus}" th:value="${item.sddeCode}" th:text="${item.sddeName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-sm layui-bg-blue" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索 </button>
+                        <button type="submit" class="layui-btn layui-btn-sm layui-btn-primary" lay-submit lay-filter="data-reset-btn"><i class="layui-icon">&#xe669;</i> 重 置 </button>
+                    </div>
+                </div>
+            </form>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add" shiro:hasPermission="sys:quartz:add"><i class="layui-icon">&#xe654;</i> 新增 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            {{#
+            var html='<span class="toolbar_span">';
+                html+='<a src="javascript:void(0)" lay-event="delFlag" shiro:hasPermission="sys:quartz:del">删除</a>';
+                if(0 == d.squaStatus){
+                    html+= '<a src="javascript:void(0)" lay-event="status1" shiro:hasPermission="sys:quartz:status"><div></div>禁用</a>'
+                }else if(1 == d.squaStatus){
+                    html+= '<a src="javascript:void(0)" lay-event="status0" shiro:hasPermission="sys:quartz:status"><div></div>启用</a>'
+                }
+                html+='<a src="javascript:void(0)" lay-event="update" shiro:hasPermission="sys:quartz:edit"><div></div>编辑</a>';
+                if(0 == d.squaStatus){
+                    if(0 == d.quartzStatus){
+                        html+= '<a src="javascript:void(0)" lay-event="quartzStatus1" shiro:hasPermission="sys:quartz:start:stop"><div></div>停止</a>'
+                    }else if(1 == d.squaQuartzStatus){
+                        html+= '<a src="javascript:void(0)" lay-event="quartzStatus0" shiro:hasPermission="sys:quartz:start:stop"><div></div>启动</a>'
+                    }
+                }
+                return html+'</span>'
+            }}
+        </script>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-quartz/';
+
+        var currTable = Asurplus.tableRender({
+            table: table,
+            url: baseUrl + 'list',
+            cols: [
+                [
+                {field: '', title: '', type:'numbers', templet: function (d) {return d.LAY_TABLE_INDEX + 1;}},
+                {field: 'squaClassName', title: '任务类名'},
+                {field: 'squaCronExpression', title: 'cron表达式'},
+                {field: 'squaParam', title: '参数'},
+                {field: 'squaDescript', title: '描述'},
+                {field: 'squaQuartzStatusText', title: '任务状态'},
+                {field: 'squaStatusText', title: '状态'},
+                {field: 'squaCreateTime', title: '创建时间'},
+                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center", fixed: 'right'}
+            ]
+            ]
+        });
+
+        // 表头工具
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {
+                Asurplus.openLayer({
+                    title: '新增',
+                    content: baseUrl + 'add'
+                }, () => {
+                    currTable.reload();
+                })
+                return false;
+            }
+        });
+
+        // 表行工具
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'update') {
+                Asurplus.openLayer({
+                    title: '修改',
+                    content: baseUrl + 'update/' + data.squaId
+                }, () => {
+                    currTable.reload();
+                })
+                return false;
+            } else if (obj.event === 'delFlag') {
+                layer.confirm('确认删除', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'delete/' + data.squaId
+                    }, () => {
+                        currTable.reload();
+                    });
+                });
+                return false;
+            } else if (obj.event === 'status0') {
+                layer.confirm('确认启用', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'updateStatus/' + data.squaId + '/0'
+                    }, () => {
+                        currTable.reload();
+                    });
+                });
+                return false;
+            } else if (obj.event === 'status1') {
+                layer.confirm('确认禁用', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'updateStatus/' + data.squaId + '/1'
+                    }, () => {
+                        currTable.reload();
+                    });
+                });
+                return false;
+            } else if (obj.event === 'quartzStatus0') {
+                layer.confirm('确认启动', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'updateQuartzStatus/' + data.squaId + '/0'
+                    }, () => {
+                        currTable.reload();
+                    });
+                });
+                return false;
+            } else if (obj.event === 'quartzStatus1') {
+                layer.confirm('确认停止', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'updateQuartzStatus/' + data.squaId + '/1'
+                    }, () => {
+                        currTable.reload();
+                    });
+                });
+                return false;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

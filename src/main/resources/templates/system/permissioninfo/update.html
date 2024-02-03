@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>修改菜单</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
+    <style>
+        .layui-form-item .layui-input-company {
+            width: auto;padding-right: 10px;line-height: 38px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <form class="layui-form" action="" lay-filter="formDemo">
+            <div class="layui-form layuimini-form">
+                <input type="hidden" name="spinId">
+                <input type="hidden" name="spinType">
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="spinName" lay-verify="required" lay-reqtext="请输入菜单名称" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">标识</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="spinSign" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item" id="href">
+                    <label class="layui-form-label">路径</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="spinHref" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">打开方式</label>
+                    <div class="layui-input-block">
+                        <select name="spinTarget" lay-verify="required" lay-reqtext="请选择打开方式">
+                            <option value="_self">内链</option>
+                            <option value="_blank">外链</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item" id="spinIcon">
+                    <label class="layui-form-label">图标</label>
+                    <div class="layui-input-block">
+                        <input type="text" placeholder="请选择" class="layui-input hide" id="iconPicker" lay-filter="iconPicker" th:value="${data.spinIcon}">
+                        <input type="text" name="icon" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">排序</label>
+                    <div class="layui-input-block">
+                        <input type="number" min="0" name="spinSort" lay-verify="required" lay-reqtext="请输入排序" placeholder="请输入" class="layui-input">
+                        <tip>值越小，越靠前</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">描述</label>
+                    <div class="layui-input-block">
+                        <textarea name="spinDescript" placeholder="请输入" class="layui-textarea" style="resize: none"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="saveBtn" shiro:hasPermission="sys:permission:info:edit"> 保存 </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+<script type="text/javascript" th:src="@{/layuimini/js/lay-config.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form','notice','iconPickerFa'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            layer = layui.layer,
+            iconPickerFa = layui.iconPickerFa,
+            notice = layui.notice;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-permission-info/';
+
+        form.val("formDemo", [[${data}]]);
+
+        var type = [[${data.spinType}]];
+        if(0 == type){
+            $('#spinIcon').show();
+        }else{
+            $('#spinIcon').hide();
+        }
+        if(2 == type){
+            $('#spinIcon').hide();
+        }
+
+        iconPickerFa.render({
+            elem: '#iconPicker',
+            url: ctxPath + "layuimini/lib/font-awesome-4.7.0/less/variables.less",
+            search: true,
+            page: true,
+            limit: 20,
+            click: function (data) {
+                form.val("formDemo", {
+                    "spinIcon": data.icon
+                });
+            }
+        });
+
+        // 监听提交
+        form.on('submit(saveBtn)', function (res) {
+            var data = res.field;
+            Asurplus.post({
+                url: baseUrl + 'update',
+                data: JSON.stringify(data),
+            }, () => {
+                setTimeout(function () {
+                    var windowIndex = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(windowIndex);
+                }, 1500)
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

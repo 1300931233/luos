@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>条形码</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="ok-body">
+            <blockquote class="layui-elem-quote">
+                <p>NProgress.js提供页面加载进度条效果，当页面打开加载时，在页面顶部会出现进度条加载动画。</p>
+                <p>NProgress.js是轻量级的进度条组件，使用简便，可以很方便集成到单页面应用中。</p>
+            </blockquote>
+            <pre>
+layui.use(["nprogress"], function () {
+    let nprogress = layui.nprogress;
+    <br/>
+    // 开始进度条
+    nprogress.start();
+    // 结束进度条
+    nprogress.done();
+});
+        </pre>
+            <button type="button" class="layui-btn" id="start">开始进度条</button>
+            <button type="button" class="layui-btn" id="done">结束进度条</button>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(["code", "nprogress"], function () {
+        let code = layui.code;
+        let nprogress = layui.nprogress;
+        let $ = layui.jquery;
+
+        code({
+            elem: "pre",
+            title: "代码示例",
+            about: false
+        });
+
+        nprogress.start();
+        if (document.readyState == "complete" || document.readyState == "interactive") {
+            nprogress.done();
+        }
+
+        $("#start").click(function () {
+            nprogress.start();
+        });
+
+        $("#done").click(function () {
+            nprogress.done();
+        });
+    });
+</script>
+</body>
+</html>

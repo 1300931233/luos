@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>配置字典</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add" shiro:hasPermission="sys:dict:add"><i class="layui-icon">&#xe654;</i> 新增 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <span class="toolbar_span">
+                <a src="javascript:void(0)" lay-event="delFlag" shiro:hasPermission="sys:dict:del">删除</a>
+                <a src="javascript:void(0)" lay-event="update" shiro:hasPermission="sys:dict:edit"><div></div>编辑</a>
+            </span>
+        </script>
+    </div>
+</div>
+<input type="hidden" name="sddeDictCode" th:value="${sddeDictCode}">
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-dict-detail/';
+
+        var currTable = Asurplus.tableRender({
+            table: table,
+            url: baseUrl + 'listDetail',
+            where: {
+                'sddeDictCode': $('input[name="sddeDictCode"]').val()
+            },
+            defaultToolbar: [],
+            cols: [
+                [
+                {field: '', title: '', type:'numbers', templet: function (d) {return d.LAY_TABLE_INDEX + 1;}},
+                {field: 'sddeCode', title: '编码'},
+                {field: 'sddeName', title: '名称'},
+                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center", fixed: 'right'}
+            ]
+            ],
+            page: false
+        });
+
+        // 表头工具
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {
+                Asurplus.openLayer({
+                    title: '新增',
+                    content: baseUrl + 'add/' + $('input[name="sddeDictCode"]').val()
+                }, () => {
+                    currTable.reload();
+                })
+                return false;
+            }
+        });
+
+        // 表行工具
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'update') {
+                Asurplus.openLayer({
+                    title: '修改',
+                    content: baseUrl + 'update/' + data.sddeId
+                }, () => {
+                    currTable.reload();
+                })
+                return false;
+            } else if (obj.event === 'delFlag') {
+                layer.confirm('确认删除', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'delete/'+data.sddeId
+                    }, function () {
+                        currTable.reload();
+                    });
+                });
+                return false;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

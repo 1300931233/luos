@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${sysConfig.sconWebsiteTitle}"></title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Access-Control-Allow-Origin" content="*">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/layuimini.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/index.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/themes/default.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/lib/font-awesome-4.7.0/css/font-awesome.min.css}" media="all">
+    <style id="layuimini-bg-color">
+        .avatar-index{
+            display: block;
+            margin-left: 24px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="layui-layout-body layuimini-all">
+<div class="layui-layout layui-layout-admin">
+
+    <div class="layui-header header">
+        <div class="layui-logo layuimini-logo">
+            <a href="javascript:;">
+                <!--<img src="img/logo.png" >-->
+                <h1>数字名片</h1>
+            </a>
+        </div>
+
+        <div class="layuimini-header-content">
+            <a>
+                <div class="layuimini-tool"><i title="展开" class="fa fa-outdent" data-side-fold="1"></i></div>
+            </a>
+
+            <!--电脑端头部菜单-->
+            <ul class="layui-nav layui-layout-left layuimini-header-menu layuimini-menu-header-pc layuimini-pc-show" style="display: none">
+            </ul>
+
+            <!--手机端头部菜单-->
+            <ul class="layui-nav layui-layout-left layuimini-header-menu layuimini-mobile-show" style="display: none">
+                <li class="layui-nav-item">
+                    <dl class="layui-nav-child layuimini-menu-header-mobile">
+                    </dl>
+                </li>
+            </ul>
+
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item mobile layui-hide-xs now-time" lay-unselect>
+                    <span id="nowTime" style="padding: 0 20px"></span>
+                </li>
+                <li class="layui-nav-item mobile layui-hide-xs lock-screen" lay-unselect>
+                    <a href="javascript:;" data-lock="锁屏" title="锁屏" id="lock-screen"><i class="fa fa-lock"></i></a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;" data-refresh="刷新" title="刷新"><i class="fa fa-refresh"></i></a>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;" data-clear="清理" title="清理" class="layuimini-clear"><i class="fa fa-trash-o"></i></a>
+                </li>
+                <li class="layui-nav-item mobile layui-hide-xs" lay-unselect>
+                    <a href="javascript:;" data-check-screen="full" title="全屏"><i class="fa fa-arrows-alt"></i></a>
+                </li>
+                <li class="layui-nav-item" lay-unselect th:if="${not #strings.isEmpty(data.smanAvatar)}" >
+                    <img th:src="${data.smanAvatar}" alt="" id="pic-img" class="avatar-index">
+                </li>
+                <li class="layui-nav-item layuimini-setting">
+                    <a href="javascript:;" th:if="${not #strings.isEmpty(data.smanName)}" th:text="${data.smanName}"></a>
+                    <dl class="layui-nav-child">
+                        <dd>
+                            <a href="javascript:;" layuimini-content-href="sys/sys-manager/info" data-title="基本资料" data-icon="fa fa-gears">基本资料</a>
+                        </dd>
+                        <dd>
+                            <a href="javascript:;" layuimini-content-href="sys/sys-manager/updatePassword" data-title="修改密码" data-icon="fa fa-gears">修改密码</a>
+                        </dd>
+                    </dl>
+                </li>
+                <li class="layui-nav-item" lay-unselect>
+                    <a href="javascript:;" class="login-out" title="退出登录"><i class="fa fa-power-off"></i></a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!--无限极左侧菜单-->
+    <div class="layui-side layui-bg-black layuimini-menu-left">
+    </div>
+
+    <!--初始化加载层-->
+    <div class="layuimini-loader">
+        <div class="layuimini-loader-inner"></div>
+        <p style="position: relative;top: 55%;width: 100%;text-align: center;color: #fff;font-weight: bold">项目正在加载中，请耐心等待 . . .</p>
+    </div>
+
+    <!--手机端遮罩层-->
+    <div class="layuimini-make"></div>
+
+    <!-- 移动导航 -->
+    <div class="layuimini-site-mobile"><i class="layui-icon"></i></div>
+
+    <div class="layui-body">
+
+        <div class="layuimini-tab layui-tab-rollTool layui-tab" lay-filter="layuiminiTab" lay-allowclose="true">
+            <ul class="layui-tab-title">
+                <li class="layui-this" id="layuiminiHomeTabId" lay-id=""></li>
+            </ul>
+            <div class="layui-tab-control">
+                <li class="layuimini-tab-roll-left layui-icon layui-icon-left"></li>
+                <li class="layuimini-tab-roll-right layui-icon layui-icon-right"></li>
+                <li class="layui-tab-tool layui-icon layui-icon-down">
+                    <ul class="layui-nav close-box">
+                        <li class="layui-nav-item">
+                            <a href="javascript:;"><span class="layui-nav-more"></span></a>
+                            <dl class="layui-nav-child">
+                                <dd><a href="javascript:;" layuimini-tab-close="current">关闭当前</a></dd>
+                                <dd><a href="javascript:;" layuimini-tab-close="other">关闭其他</a></dd>
+                                <dd><a href="javascript:;" layuimini-tab-close="all">关闭全部</a></dd>
+                            </dl>
+                        </li>
+                    </ul>
+                </li>
+            </div>
+            <div class="layui-tab-content">
+                <div id="layuiminiHomeTabIframe" class="layui-tab-item layui-show"></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 锁屏窗口 -->
+<div style="display: none" id="lock-container">
+    <form class="layui-form" action="" lay-filter="formLock">
+        <div class="admin-header-lock" id="lock-box">
+            <div class="admin-header-lock-img">
+                <img th:if="${not #strings.isEmpty(data.smanAvatar)}" th:src="${data.smanAvatar}"/>
+            </div>
+            <div class="input_btn">
+                <input type="text" class="layui-input admin-header-lock-input" placeholder="请输入登录密码" name="password" onclick="this.type='password'" />
+                <button class="layui-btn" lay-submit lay-filter="formLock">解锁</button>
+            </div>
+            <input type="text" readonly style="height: 20px;line-height: 20px;color: #FF5722;border: none" name="lockMsg" />
+        </div>
+    </form>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+<script type="text/javascript" th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    var $;
+    layui.use(['jquery', 'layer', 'form', 'miniAdmin', 'miniTab'], function () {
+        $ = layui.jquery
+        var layer = layui.layer,
+            form = layui.form,
+            miniTab = layui.miniTab,
+            miniAdmin = layui.miniAdmin;
+
+        var ctxPath = /*[[@{/}]]*/;
+
+        // 初始化配置
+        var options = {
+            iniUrl: ctxPath + 'initMenu',    // 初始化接口
+            urlHashLocation: true,      // 是否打开hash定位
+            bgColorDefault: false,      // 主题默认配置
+            multiModule: true,          // 是否开启多模块
+            menuChildOpen: false,       // 是否默认展开菜单
+            loadingTime: 0,             // 初始化加载时间
+            pageAnim: true,             // iframe窗口动画
+            maxTabNum: 20,              // 最大的tab打开数量
+            isHideOpenMenu: true,      // 点击左侧下拉菜单，关闭其他下拉菜单
+        };
+        miniAdmin.render(options);
+
+        // 判断是否初始密码
+        var isDefaultPassword = [[${defaultPassword}]];
+        if(1 == isDefaultPassword){
+            let index = layer.confirm('您的密码为系统初始密码，请尽快修改密码', {
+                btn: ['去修改', '忽略']
+            }, function(){
+                miniTab.openNewTabByIframe({title: '修改密码', href: ctxPath + 'sys/sys-manager/updatePassword'});
+                layer.close(index);
+            }, function(){
+                layer.close(index);
+            });
+        }
+
+        // 加载时间模块
+        getLangDate();
+
+        // 判断是否锁屏
+        if(window.localStorage.getItem("lockcms") == "true"){
+            setTimeout(function () {
+                lockPage();
+            }, 1000)
+        }
+
+        // 注销登录
+        $('.login-out').on("click", function () {
+            layer.confirm('退出登录？', {
+                btn: ['确定'],
+                title: '提示'
+            }, function(){
+                window.location.href = ctxPath + 'loginOut';
+            });
+        });
+
+        // 点击锁屏
+        $('#lock-screen').click(function () {
+            lockPage();
+            window.localStorage.setItem("lockcms", true);
+        });
+
+        // 点击解锁
+        form.on('submit(formLock)', function(res){
+            var data = res.field;
+            if(!data.password){
+                form.val("formLock", {
+                    lockMsg: '请输入密码'
+                });
+                return false;
+            }
+            Asurplus.post({
+                url: ctxPath + 'unlock',
+                data: JSON.stringify(data)
+            }, function () {
+                window.localStorage.setItem("lockcms", false);
+                form.val("formLock", {
+                    password: '',
+                    lockMsg: ''
+                });
+                unlockPage();
+            }, function (res) {
+                form.val("formLock", {
+                    lockMsg: res.msg
+                });
+            });
+            return false;
+        });
+    });
+
+    // 锁屏
+    function lockPage(){
+        layer.open({
+            title : false,
+            type : 1,
+            content : $('#lock-container'),
+            closeBtn : 0,
+            shade : [1, '#49A9EE'],
+        })
+        webCheck(false);
+    };
+
+    // 解锁
+    function unlockPage() {
+        layer.closeAll("page");
+        webCheck(true);
+    }
+
+    // 禁用网页检查
+    function webCheck(flag) {
+        // 禁用f12
+        document.onkeydown = function() {
+            if(event.keyCode == 123) {
+                return flag;
+            }
+        };
+        // 禁用右键
+        $(document).ready(function(){
+            $(document).bind("contextmenu",function(e){
+                return flag;
+            });
+        });
+    };
+
+    // 值小于10时，在前面补0
+    function dateFilter(date){
+        if(date < 10){
+            return "0" + date;
+        }
+        return date;
+    };
+
+    // 渲染时间
+    function getLangDate(){
+        var dateObj = new Date(); //表示当前系统时间的Date对象
+        var year = dateObj.getFullYear(); //当前系统时间的完整年份值
+        var month = dateObj.getMonth()+1; //当前系统时间的月份值
+        var date = dateObj.getDate(); //当前系统时间的月份中的日
+        var day = dateObj.getDay(); //当前系统时间中的星期值
+        var weeks = ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"];
+        var week = weeks[day]; //根据星期值，从数组中获取对应的星期字符串
+        var hour = dateObj.getHours(); //当前系统时间的小时值
+        var minute = dateObj.getMinutes(); //当前系统时间的分钟值
+        var second = dateObj.getSeconds(); //当前系统时间的秒钟值
+        var timeValue = '';
+        if(8 <= hour && hour < 12){
+            timeValue = '上午好，元气满满一天';
+        }else if(12 <= hour && hour < 14){
+            timeValue = '中午好，让眼睛休息一下吧';
+        }else if(14 <= hour && hour < 18){
+            timeValue = '下午好，伸个懒腰吧';
+        }else if(18 <= hour && hour < 23){
+            timeValue = '下班了，多陪陪家人';
+        }else {
+            timeValue = '夜深了，早点休息吧';
+        }
+        var newDate = dateFilter(year) + "年" + dateFilter(month) + "月" + dateFilter(date) + "日 " + " " + dateFilter(hour) + ":" + dateFilter(minute) + ":" + dateFilter(second);
+        document.getElementById("nowTime").innerHTML = timeValue + "！现在是：" + newDate + " " + week;
+        setTimeout("getLangDate()",1000);
+    };
+</script>
+</body>
+</html>

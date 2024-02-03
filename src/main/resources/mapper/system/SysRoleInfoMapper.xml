@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asurplus.console.system.mapper.SysRoleInfoMapper">
+
+    <select id="listXmSelectPojo" resultType="com.asurplus.console.system.pojo.XmSelectPojo">
+        SELECT
+            a.SROL_ID AS `value`,
+            a.`SROL_NAME` AS name,
+            ( CASE WHEN b.SMRO_MANAGER_ID IS NULL THEN 0 ELSE 1 END ) AS selected
+        FROM
+            sys_role a
+            LEFT JOIN sys_manager_role b ON ( a.SROL_ID = b.SMRO_ROLE_ID AND b.SMRO_MANAGER_ID = ${userId} )
+        WHERE
+            a.SROL_DEL_FLAG = 0
+            AND a.`SROL_STATUS` = 0
+    </select>
+</mapper>

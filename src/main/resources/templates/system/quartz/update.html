@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>修改定时任务</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layui-form-item .layui-input-company {
+            width: auto;padding-right: 10px;line-height: 38px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <form class="layui-form" action="" lay-filter="formDemo">
+            <div class="layui-form layuimini-form">
+                <input type="hidden" name="squaId">
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">任务类名</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="squaClassName" lay-verify="required|classname" lay-reqtext="请输入任务类名" placeholder="请输入" class="layui-input" disabled>
+                        <tip>任务类名应为定时任务类的文件路径，请填写全英文</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">cron表达式</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="squaCronExpression" lay-verify="required" lay-reqtext="请输入cron表达式" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">参数</label>
+                    <div class="layui-input-block">
+                        <textarea name="squaParam" placeholder="请输入" class="layui-textarea" style="resize: none"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">描述</label>
+                    <div class="layui-input-block">
+                        <textarea name="squaDescript" placeholder="请输入" class="layui-textarea" style="resize: none"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">任务状态</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="squaQuartzStatus" th:each="item : ${status}" th:value="${item.sddeCode}" th:title="${item.sddeName}">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="saveBtn" shiro:hasPermission="sys:quartz:edit"> 保存 </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form','notice'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            layer = layui.layer,
+            notice = layui.notice;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-quartz/';
+
+        form.val("formDemo", [[${data}]]);
+
+        form.verify({
+            //我们既支持上述函数式的方式，也支持下述数组的形式
+            //数组的两个值分别代表：[正则匹配、匹配不符时的提示文字]
+            classname: [
+                /^[a-zA-Z]+(\.([a-zA-Z])+)+$/
+                ,'请填写正确的任务类名'
+            ]
+        });
+
+        // 监听提交
+        form.on('submit(saveBtn)', function (res) {
+            var data = res.field;
+            Asurplus.post({
+                url: baseUrl + 'update',
+                data: JSON.stringify(data)
+            }, () => {
+                setTimeout(function () {
+                    var windowIndex = parent.layer.getFrameIndex(window.name);
+                    parent.layer.close(windowIndex);
+                }, 1500)
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>名片列表</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<style>
+    /* .layui-form-item .layui-input-company {
+         width: auto;padding-right: 10px;line-height: 38px;
+     }*/
+    .layui-input-block {
+        margin-left:  134px;
+        width: 60%;
+    }
+    .disable{
+        pointer-events: none;
+    }
+    .layuimini-form > .layui-form-item > .layui-input-block {
+        margin-left: 116px !important;
+    }
+    .layui-btn-fluid{
+        width: 200px;
+    }
+</style>
+<div class="layuimini-container">
+
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formDemo">
+            <input type="hidden" name="uccaId">
+            <div class="layui-form-item">
+                <label class="layui-form-label">图片</label>
+                <input type="hidden" name="smanAvatar">
+                <div style="height: 100px;width: 100px;position: relative;">
+                    <input type="file" accept="image/*" id="pic-input" style="position: absolute;left: 0;top: 0;opacity: 0;filter: alpha(opacity=0);height: 100%;width: 100%;z-index: 99">
+                    <img alt="" id="pic-img" style="height: 100%;width: 100%;position: absolute;left: 0;top: 0;border: 1px solid #1E9FFF;border-radius: 50%">
+                </div>
+               <!-- <div class="layui-input-block">
+                    <div style="height: 100px;width: 100px;position: relative;">
+                        <input type="file" accept="image/*" id="pic-input" style="position: absolute;left: 0;top: 0;opacity: 0;filter: alpha(opacity=0);height: 100%;width: 100%;z-index: 99">
+                        <img alt="" id="pic-img" style="height: 100%;width: 100%;position: absolute;left: 0;top: 0;border: 1px solid #1E9FFF;border-radius: 50%">
+                    </div>
+                </div>-->
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">名字</label>
+                <div class="layui-input-block">
+                    <input type="text" name="uccaName" lay-verify="required" lay-reqtext="请输入真实姓名" placeholder="请输入" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">电话</label>
+                <div class="layui-input-block">
+                    <input type="text" name="uccaPhone" lay-verify="required|phone" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label required">公司</label>
+                <div class="layui-input-block">
+                    <input type="text" name="uccaCompany" lay-verify="required|phone" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">职务</label>
+                <div class="layui-input-block">
+                    <input type="text" name="uccaJob" lay-verify="required|phone" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">行业</label>
+                <div class="layui-input-block">
+                    <input type="text" name="uccaIndustry" lay-verify="required|phone" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label required">地址</label>
+                <div class="layui-input-block">
+                    <input type="text"  lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">是否公开</label>
+                <div class="layui-input-block">
+                    <input type="radio" name="uuinIsFreeze" lay-filter="uucoIsFreeze" value="1" title="公开"  >
+                    <input type="radio" name="uuinIsFreeze" lay-filter="uucoIsFreeze" value="0" title="未公开" >
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-input-block">
+                    <button class="layui-btn layui-btn-fluid" lay-submit lay-filter="saveBtn" shiro:hasPermission="usr:user:info:add"> 保存 </button>
+                </div>
+            </div>
+    </form>
+
+</div>
+</div>
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+<script type="text/javascript" th:src="@{/js/md5.min.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form', 'table','layer'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            layer= layui.layer,
+            table = layui.table;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'usr/calling-card/';
+
+        $('#pic-input').change(function () {
+            var formData = new FormData();
+            formData.append("files", $("#pic-input")[0].files[0]);
+            Asurplus.upload({
+                url: baseUrl+ '/uploadFileAjax',
+                data: formData,
+                dir: 'system'
+            }, (res) => {
+                $("input[name='smanAvatar']").val(res.data);
+                $('#pic-img').attr('src', res.data);
+            });
+        });
+
+
+        // 监听提交
+        form.on('submit(saveBtn)', function (res) {
+            var data = res.field;
+
+            Asurplus.doPost({
+                url: baseUrl + 'save',
+                data: JSON.stringify(data),
+                contentType: 'application/json'
+            }, (res) => {
+                window.parent.closeRef("新增成功");
+            })
+            return false;
+        });
+
+    });
+</script>
+
+</body>
+</html>

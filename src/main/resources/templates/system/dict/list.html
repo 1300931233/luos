@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>数据字典</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layuimini-main{
+            display: flex;
+            justify-content: space-between;
+        }
+        .message_box{
+            display: flex;
+            align-items: center;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            box-sizing: border-box;
+            padding: 8px 15px 8px 35px;
+            margin: 10px 2.5% 25px 2.5%;
+            border-radius: 4px
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <div class="box1" style="width: 70%;flex: none">
+            <fieldset class="table-search-fieldset">
+                <legend>搜索信息(<b style="color: #1E9FFF;cursor: pointer">收起--展开</b>)</legend>
+                <form class="layui-form layui-form-pane" id="search-form" lay-filter="search-form" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">编码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="sdicCode" autocomplete="off" class="layui-input" placeholder="请输入">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">名称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="sdicName" autocomplete="off" class="layui-input" placeholder="请输入">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-inline">
+                                <select name="sdicStatus">
+                                    <option value="" selected>请选择</option>
+                                    <option th:each="item : ${status}" th:value="${item.sddeCode}" th:text="${item.sddeName}"></option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-sm layui-bg-blue" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索 </button>
+                            <button type="submit" class="layui-btn layui-btn-sm layui-btn-primary" lay-submit lay-filter="data-reset-btn"><i class="layui-icon">&#xe669;</i> 重 置 </button>
+                        </div>
+                    </div>
+                </form>
+            </fieldset>
+
+            <script type="text/html" id="toolbarDemo">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add" shiro:hasPermission="sys:dict:add"><i class="layui-icon">&#xe654;</i> 新增 </button>
+                </div>
+            </script>
+
+            <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+            <script type="text/html" id="currentTableBar">
+                {{#
+                var html='<span class="toolbar_span">';
+                html+='<a src="javascript:void(0)" lay-event="delFlag" shiro:hasPermission="sys:dict:del">删除</a>';
+                if(0 == d.sdicStatus){
+                html+= '<a src="javascript:void(0)" lay-event="status1" shiro:hasPermission="sys:dict:status"><div></div>禁用</a>'
+                }else if(1 == d.sdicStatus){
+                html+= '<a src="javascript:void(0)" lay-event="status0" shiro:hasPermission="sys:dict:status"><div></div>启用</a>'
+                }
+                html+='<a src="javascript:void(0)" lay-event="update" shiro:hasPermission="sys:dict:edit"><div></div>编辑</a>';
+                html+='<a src="javascript:void(0)" lay-event="auth" shiro:hasPermission="sys:dict:config"><div></div>配置</a>';
+                return html+'</span>'
+                }}
+            </script>
+        </div>
+        <!-- 字典配置项 -->
+        <div class="box2" style="flex: auto;padding-top: 10px">
+            <div class="message_box">
+                <i class="fa fa-info-circle" style="color: #1890ff;"></i>
+                <p style="margin: 0 15px">当前配置字典项：<span class="updateTime"></span></p>
+                <div style="color: #1890ff;" id="currentDictCode"></div>
+            </div>
+            <script type="text/html" id="toolbarDemo2">
+                <div class="layui-btn-container">
+                    <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add" shiro:hasPermission="sys:dict:add"><i class="layui-icon">&#xe654;</i> 新增 </button>
+                </div>
+            </script>
+
+            <table class="layui-hide" id="currentTableId2" lay-filter="currentTableFilter2"></table>
+
+            <script type="text/html" id="currentTableBar2">
+                <span class="toolbar_span">
+                <a src="javascript:void(0)" lay-event="delFlag" shiro:hasPermission="sys:dict:del">删除</a>
+                <a src="javascript:void(0)" lay-event="update" shiro:hasPermission="sys:dict:edit"><div></div>编辑</a>
+            </span>
+            </script>
+        </div>
+
+    </div>
+</div>
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-dict/';
+
+        var currentDictCode = '';
+
+        var currTable = Asurplus.tableRender({
+            table: table,
+            url: baseUrl + 'list',
+            cols: [
+                [
+                    {field: '', title: '', type:'numbers', templet: function (d) {return d.LAY_TABLE_INDEX + 1;}},
+                    {field: 'sdicCode', title: '编码'},
+                    {field: 'sdicName', title: '名称'},
+                    {field: 'sdicDescript', title: '描述'},
+                    {field: 'sdicStatusText', title: '状态'},
+                    {field: 'sdicCreateTime', title: '创建时间'},
+                    {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center", fixed: 'right'}
+                ]
+            ]
+        });
+
+        // 表头工具
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {
+                Asurplus.openLayer({
+                    title: '新增',
+                    content: baseUrl + 'add'
+                }, () => {
+                    currTable.reload();
+                })
+                return false;
+            }
+        });
+
+        // 表行工具
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'update') {
+                Asurplus.openLayer({
+                    title: '修改',
+                    content: baseUrl + 'update/' + data.sdicId,
+                }, () => {
+                    currTable.reload();
+                })
+                return false;
+            } else if (obj.event === 'auth') {
+                $('#currentDictCode').text(data.sdicName + '（' + data.sdicCode + '）');
+                currentDictCode = data.sdicCode;
+                table.reload('currentTableId2', {
+                    page: {
+                        curr: 1
+                    }
+                    , where: {
+                        dictCode: data.sdicCode
+                    }
+                }, 'data');
+                return false;
+            }  else if (obj.event === 'delFlag') {
+                layer.confirm('确认删除', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'delete/' + data.sdicId
+                    }, function () {
+                        currTable.reload();
+                    });
+                });
+                return false;
+            } else if (obj.event === 'status0') {
+                layer.confirm('确认启用', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'updateStatus/' + data.sdicId + '/0'
+                    }, function () {
+                        currTable.reload();
+                    });
+                });
+                return false;
+            } else if (obj.event === 'status1') {
+                layer.confirm('确认禁用', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'updateStatus/' + data.sdicId + '/1'
+                    }, function () {
+                        currTable.reload();
+                    });
+                });
+                return false;
+            }
+        });
+
+        /**
+         * 字典配置
+         */
+        var baseUrl2 = ctxPath + 'sys/sys-dict-detail/';
+        var currTable2 = Asurplus.tableRender({
+            table: table,
+            elem: '#currentTableId2',
+            id: 'currentTableId2',
+            toolbar: '#toolbarDemo2',
+            url: baseUrl2 + 'listDetail',
+            where: {
+                dictCode: ''
+            },
+            defaultToolbar: [],
+            cols: [
+                [
+                    {field: '', title: '', type:'numbers', templet: function (d) {return d.LAY_TABLE_INDEX + 1;}},
+                    {field: 'sddeCode', title: '编码'},
+                    {field: 'sddeName', title: '名称'},
+                    {title: '操作', minWidth: 150, toolbar: '#currentTableBar2', align: "center", fixed: 'right'}
+                ]
+            ],
+            page: false
+        });
+
+        // 表头工具
+        table.on('toolbar(currentTableFilter2)', function (obj) {
+            if (obj.event === 'add') {
+                if(!currentDictCode){
+                    notice.warning('请先点击左边的配置按钮');
+                    return false;
+                }
+                Asurplus.openLayer({
+                    title: '新增',
+                    content: baseUrl2 + 'add/' + currentDictCode
+                }, () => {
+                    currTable2.reload();
+                })
+                return false;
+            }
+        });
+
+        // 表行工具
+        table.on('tool(currentTableFilter2)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'update') {
+                Asurplus.openLayer({
+                    title: '修改',
+                    content: baseUrl2 + 'update/' + data.sddeId
+                }, () => {
+                    currTable2.reload();
+                })
+                return false;
+            } else if (obj.event === 'delFlag') {
+                layer.confirm('确认删除', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl2 + 'delete/'+data.sddeId
+                    }, function () {
+                        currTable2.reload();
+                    });
+                });
+                return false;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

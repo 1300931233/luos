@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>文件上传</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <link rel="stylesheet" th:href="@{/module/zyupload/css/zyupload-1.0.0.min.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div id="demo" class="demo"></div>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/module/zyupload/js/zyupload-1.0.0.min.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+
+    var ctxPath = /*[[@{/}]]*/;
+    var baseUrl = ctxPath + 'sys/sys-minio/';
+
+    $(function(){
+        // 初始化插件
+        $("#demo").zyUpload({
+            width            :   "650px",                 // 宽度
+            height           :   "400px",                 // 宽度
+            itemWidth        :   "120px",                 // 文件项的宽度
+            itemHeight       :   "100px",                 // 文件项的高度
+            fileType         :   ["jpg","png","peng"],    // 文件类型
+            fileSize         :   1024*1024,               // 文件大小
+            url              :   baseUrl + "uploadFile",  // 上传文件的路径
+            multiple         :   true,                    // 是否可以多个文件上传
+            dragDrop         :   true,                    // 是否可以拖动上传文件
+            del              :   true,                    // 是否可以删除文件
+            finishDel        :   false,  				  // 是否在上传文件完成后删除预览
+            /* 外部获得的回调接口 */
+            onSelect: function(files, allFiles){                    // 选择文件的回调方法
+                console.info("当前选择了以下文件：");
+                console.info(files);
+                console.info("之前没上传的文件：");
+                console.info(allFiles);
+            },
+            onDelete: function(file, surplusFiles){                     // 删除一个文件的回调方法
+                console.info("当前删除了此文件：");
+                console.info(file);
+                console.info("当前剩余的文件：");
+                console.info(surplusFiles);
+            },
+            onSuccess: function (file) {
+                // 文件上传成功的回调方法
+                console.info("此文件上传成功：");
+                console.info(file);
+            },
+            onFailure: function(file){                    // 文件上传失败的回调方法
+                console.info("此文件上传失败：");
+                console.info(file);
+            },
+            onComplete: function(responseInfo){           // 上传完成的回调方法
+                console.info("文件上传完成");
+                console.info(responseInfo);
+            }
+        });
+    });
+
+</script>
+</body>
+</html>

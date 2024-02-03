@@ -1,0 +1,19 @@
+.more_div{
+    color: #0b0b0b;
+}
+.more_div li{
+    font-size: 14px;
+    /*min-height: 27px;*/
+    min-height: 10px;
+    line-height: 30px;
+}
+.more_div li:hover{
+    color: #0f83ca;
+    cursor: pointer;
+}
+.custom .layui-layer-content i{
+    display: none;
+}
+.custom .layui-layer-content {
+    top:18px;
+}

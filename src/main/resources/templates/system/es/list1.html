@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:type="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>ID检索页</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<style>
+    .info{
+        /*text-align: center;*/
+        padding: 55px 20px 45px;
+        margin: 30px 0;
+        border-top: 1px solid #ccc;
+        clear: both;
+    }
+    a {
+        color: white;
+    }
+    a:hover {
+        color: white;
+    }
+     video {
+        max-width: 400px;
+        width: 100%;
+        max-height: 225px;
+        height: 100%;
+        object-fit: fill;
+    }
+     img{
+         max-width: 275px;
+         float: left;
+     }
+     .fenmian{
+         margin-right: 20px;
+         display: inline-block;
+         float: left;
+         max-width: 441px;
+     }
+     .infos{
+         width: 47%;
+         float: left;
+         margin-bottom: 37px;
+     }
+</style>
+<body>
+    <div>
+
+        <div class="layui-form-item">
+            <form class="layui-form layui-form-pane" id="search-form1" lay-filter="search-form">
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoId"  placeholder="资源ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoRlibId"  placeholder="资源库ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoRpclId"  placeholder="全局分类ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoRstyId"  placeholder="资源类型ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoRtinId"  placeholder="所属作业ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoRlclId1"  placeholder="自定义分类1ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoRlclId2"  placeholder="自定义分类2ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoRlclId3"  placeholder="自定义分类3ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoSmanId"  placeholder="管理员ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoUserId"  placeholder="用户ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoRireId"  placeholder="导入记录ID" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="rrcoLanguage"  placeholder="语种" autocomplete="off" class="layui-input">
+                </div>
+                <div class="layui-input-inline" style="width: 90px">
+                    <input type="text" name="keyword"  placeholder="检索词" autocomplete="off" class="layui-input">
+                </div>
+                <button type="submit" class="layui-btn layui-btn-sm layui-bg-blue" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索 </button>
+                <button type="submit" class="layui-btn layui-btn-sm layui-btn-primary" lay-submit lay-filter="data-reset-btn"><i class="layui-icon">&#xe669;</i> 重 置 </button>
+                <button type="button" class="layui-btn layui-btn-normal"><a href="javascript:void(0)" onclick="reCreateIndex(this.type)" type="资源核心索引" >重构资源核心索引</a></button>
+            </form>
+        </div>
+        <div>
+            <ul class="dataLists">
+
+            </ul>
+        </div>
+        <hr>
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+    </div>
+</body>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+<script type="text/javascript" th:src="@{/layuimini/js/lay-config.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form', 'table'], function(){
+        var form = layui.form,
+            table = layui.table;
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'system/sys-es/';
+
+        // //字段检索
+        // var currTable = Asurplus.tableRender({
+        //     table: table,
+        //     url: `${baseUrl}indexSearch`,
+        //     where: {
+        //         "rrcoId": $("#rrcoId").val() ,
+        //         "rrcoRlibId": $("#rrcoRlibId").val() ,
+        //         "rrcoRpclId": $("#rrcoRpclId").val() ,
+        //         "rrcoRstyId": $("#rrcoRstyId").val() ,
+        //         "rrcoRtinId": $("#rrcoRtinId").val() ,
+        //         "rrcoRlclId1": $("#rrcoRlclId1").val() ,
+        //         "rrcoRlclId2": $("#rrcoRlclId2").val() ,
+        //         "rrcoRlclId3": $("#rrcoRlclId3").val() ,
+        //         "rrcoSmanId": $("#rrcoSmanId").val() ,
+        //         "rrcoUserId": $("#rrcoUserId").val() ,
+        //         "rrcoRireId": $("#rrcoRireId").val()
+        //     },
+        //     cols: [
+        //         [
+        //             // {field: '', title: '', type:'numbers', templet: function (d) {return d.LAY_TABLE_INDEX + 1;}},
+        //             {field: 'rrcoId', title: '资源ID',width:80},
+        //             {field: 'rrcoRlibId', title: '资源库ID',width:50},
+        //             {field: 'rrcoRpclId', title: '全局分类ID',width:50},
+        //             {field: 'rrcoRstyId', title: '资源类型ID',width:50},
+        //             {field: 'rrcoRtinId', title: '所属作业ID',width:50},
+        //             {field: 'rrcoRlclId1', title: '自定义分类1ID',width:50},
+        //             {field: 'rrcoRlclId2', title: '自定义分类2ID',width:50},
+        //             {field: 'rrcoRlclId3', title: '自定义分类3ID',width:50},
+        //             {field: 'rrcoSmanId', title: '管理员ID',width:50},
+        //             {field: 'rrcoUserId', title: '用户ID',width:50},
+        //             {field: 'rrcoRireId', title: '导入记录ID',width:50},
+        //
+        //             {field: 'rrcoCoverPath', title: '资源封面',width:50,templet:(d)=>{
+        //                     if(!!d.rrcoCoverPath){
+        //                         return '<img src="'+d.rrcoCoverPath+'" class="avatar-show">';
+        //                     } else {
+        //                         return '';
+        //                     }
+        //                 }},
+        //             {field: 'rrcoAuditStatus', title: '审核状态',width:100},
+        //             {field: 'rrcoFileFormat', title: '原文格式',width:100},
+        //             {field: 'rrcoFileSize', title: '原文大小',width:100},
+        //             {field: 'rrcoInputdate', title: '创建时间',width:200,templet:(d)=>{
+        //                 return timestampToTime(d.rrcoInputdate);
+        //                 }},
+        //             {field: 'rrcoIsOpen', title: '启用开关',width:100},
+        //             {field: 'rrcoIsRcmd', title: '推荐开关',width:100},
+        //             {field: 'rrcoLanguage', title: '语种',width:100},
+        //             {field: 'rrcoVisits', title: '访问次数',width:50},
+        //
+        //             {field: 'map', title: '扩展属性',fixed:'right',templet:(d)=>{
+        //                     var  html ="";
+        //                     var obj = d.map;
+        //                     for(var key in obj){
+        //                         // console.log(key, obj[key])
+        //                         if(key == "title"){
+        //                             let title = obj[key].split("&");
+        //                             html += "<p class='info_title'>"+ title[0] +":"+"<span>"+ title[1] +"</span></p>";
+        //                         }
+        //                         else if(key == "content"){
+        //                             let content = obj[key].split("&");
+        //                             if(content[0] != 'null'){
+        //                                 html += "<p class='info_title'>"+ content[0] +":"+"<span>"+ content[1] +"</span></p>";
+        //                             }
+        //                         }
+        //                         else {
+        //                             html += "<p class='info_title'>"+ key +":"+"<span>"+ obj[key] +"</span></p>";
+        //                         }
+        //                     }
+        //                     return html;
+        //                 }}
+        //         ]
+        //     ]
+        // });
+
+        //字段检索
+        var currTable = Asurplus.tableRender({
+            table: table,
+            url: `${baseUrl}indexSearch`,
+            where: {
+                "rrcoId": $("#rrcoId").val() ,
+                "rrcoRlibId": $("#rrcoRlibId").val() ,
+                "rrcoRpclId": $("#rrcoRpclId").val() ,
+                "rrcoRstyId": $("#rrcoRstyId").val() ,
+                "rrcoRtinId": $("#rrcoRtinId").val() ,
+                "rrcoRlclId1": $("#rrcoRlclId1").val() ,
+                "rrcoRlclId2": $("#rrcoRlclId2").val() ,
+                "rrcoRlclId3": $("#rrcoRlclId3").val() ,
+                "rrcoSmanId": $("#rrcoSmanId").val() ,
+                "rrcoUserId": $("#rrcoUserId").val() ,
+                "rrcoRireId": $("#rrcoRireId").val()
+            },
+            cols: [
+                [
+                    {field: 'rrcoId', title: '资源ID',width:80},
+                    {field: 'rrcoRlibId', title: '资源库ID',width:50},
+                    {field: 'rrcoRpclId', title: '全局分类ID',width:50},
+                    {field: 'rrcoRstyId', title: '资源类型ID',width:50},
+                    {field: 'rrcoRtinId', title: '所属作业ID',width:50},
+                    {field: 'rrcoRlclId1', title: '自定义分类1ID',width:50},
+                    {field: 'rrcoRlclId2', title: '自定义分类2ID',width:50},
+                    {field: 'rrcoRlclId3', title: '自定义分类3ID',width:50},
+                    {field: 'rrcoSmanId', title: '管理员ID',width:50},
+                    {field: 'rrcoUserId', title: '用户ID',width:50},
+                    {field: 'rrcoRireId', title: '导入记录ID',width:50},
+                    {field: 'rrcoLanguage', title: '语种',width:50},
+                    {field: 'rrcoCoverPath', title: '资源封面',width:50,templet:(d)=>{
+                            if(!!d.rrcoCoverPath){
+                                return '<img src="'+d.rrcoCoverPath+'" class="avatar-show">';
+                            } else {
+                                return '';
+                            }
+                        }},
+
+                    {field: 'rrcoTitle', title: '资源名称',width:50},
+                    {field: 'rrcoAttr1Data', title: '自定义字段1',width:50},
+                    {field: 'rrcoAttr2Data', title: '自定义字段2',width:50},
+                    {field: 'rrcoAttr3Data', title: '自定义字段3',width:50},
+                    {field: 'rrcoAttr4Data', title: '自定义字段4',width:50},
+                    {field: 'rrcoAttr5Data', title: '自定义字段5',width:50},
+                    {field: 'rrcoAttr6Data', title: '自定义字段6',width:50},
+                    {field: 'rrcoAttr7Data', title: '自定义字段7',width:50},
+                    {field: 'rrcoAttr8Data', title: '自定义字段8',width:50},
+                    {field: 'rrcoAttr9Data', title: '自定义字段9',width:50},
+                    {field: 'rrcoAttr10Data', title: '自定义字段10',width:50},
+                    {field: 'rrcoAttr11Data', title: '自定义字段11',width:50},
+                    {field: 'rrcoAttr12Data', title: '自定义字段12',width:50},
+                    {field: 'rrcoAttr13Data', title: '自定义字段13',width:50},
+                    {field: 'rrcoAttr14Data', title: '自定义字段14',width:50},
+                    {field: 'rrcoAttr15Data', title: '自定义字段15',width:50}
+                ]
+            ]
+        });
+
+        /**
+         * 表格搜索操作
+         */
+        form.on('submit(data-search-btn)', function (data) {
+            // 执行搜索重载
+            table.reload('currentTableId', {
+                page: {
+                    curr: 1
+                }
+                , where: form.val("search-form")
+            }, 'data');
+            return false;
+        });
+
+    });
+
+    var ctxPath = /*[[@{/}]]*/;
+    var baseUrl = ctxPath + 'system/sys-es/';
+
+    //重建索引
+    function reCreateIndex(val){
+        layui.use(["nprogress"], function () {
+            let nprogress = layui.nprogress;
+            // 开始进度条
+            nprogress.start();
+
+        index = val;
+        $.ajax({
+            type: 'post',
+            url: baseUrl + 'reCreateIndex/'+val,
+            success: function (res) {
+                alert(res.msg)
+                // 结束进度条
+                nprogress.done();
+            },
+            error: function (res) {
+                notice.error("服务器异常！");
+            }
+        });
+
+        });
+    }
+
+    //时间戳格式化
+    function timestampToTime(timestamp) {
+        // var date = new Date(timestamp * 1000);//时间戳为10位需*1000，时间戳为13位的话不需乘1000
+        var date = new Date(timestamp)
+        var Y = date.getFullYear() + '-';
+        var M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+        var D = date.getDate() + ' ';
+        var h = date.getHours() + ':';
+        var m = date.getMinutes() + ':';
+        var s = date.getSeconds();
+        return Y+M+D+h+m+s;
+    }
+
+    //鼠标回车绑定事件
+    $("#title").bind("keydown", function (e) {
+        //兼容浏览器的事件
+        let theEvent = e || window.event;
+        //兼容各浏览器的键盘事件
+        let keyCode = theEvent.keyCode || theEvent.which || theEvent.charCode;
+        if (keyCode == 13) {
+            console.log("回车执行");
+            search();
+            //当然也可以禁止回车事件
+            //theEvent.keyCode = 0;
+            //theEvent.returnValue = false;
+        }
+    })
+
+</script>
+</html>

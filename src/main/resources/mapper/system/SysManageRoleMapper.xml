@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asurplus.console.system.mapper.SysManageRoleMapper">
+
+    <select id="listUserRoleByUserId" resultType="java.lang.String">
+        SELECT
+            a.SROL_SIGN
+        FROM
+            sys_role a
+        WHERE
+            a.SROL_DEL_FLAG = 0
+            AND a.`SROL_STATUS` = 0
+            AND EXISTS ( SELECT b.SMRO_ID FROM sys_manager_role b WHERE b.SMRO_MANAGER_ID = ${userId} AND a.SROL_ID = b.SMRO_ROLE_ID )
+    </select>
+</mapper>

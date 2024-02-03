@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>名片详情</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+       /* .layui-form-item .layui-input-company {
+            width: auto;padding-right: 10px;line-height: 38px;
+        }*/
+        .layui-input-block {
+            margin-left: 120px;
+        }
+       .disable{
+           pointer-events: none;
+       }
+    </style>
+</head>
+<body class="disable">
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formDemo">
+            <input type="hidden" name="uccaId">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图片</label>
+                    <div class="layui-input-block">
+                        <input type="hidden" id="isChangeFile" name="isChangeFile" value="0">
+                        <input type="hidden" name="uccaImage">
+                        <div style="height: 100px;width: 100px;position: relative;">
+                            <input type="file" accept="image/*" id="pic-input" style="position: absolute;left: 0;top: 0;opacity: 0;filter: alpha(opacity=0);height: 100%;width: 100%;z-index: 99">
+                            <img alt="" id="pic-img" style="height: 100%;width: 100%;position: absolute;left: 0;top: 0;border: 1px solid #1E9FFF;border-radius: 50%">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">名字</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="uccaName" lay-verify="required" lay-reqtext="请输入真实姓名" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="uccaPhone" lay-verify="required|phone" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">公司</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="uccaCompany" lay-verify="required|phone" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">职务</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="uccaJob" lay-verify="required|phone" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">行业</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="uccaIndustry" lay-verify="required|phone" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label required">地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" th:value="${callingCard.uccaAddress}" lay-reqtext="请输入用户手机号" placeholder="请输入" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label">是否公开</label>
+                    <div class="layui-input-block">
+                        <input type="radio" name="uuinIsFreeze" lay-filter="uucoIsFreeze" value="1" title="公开" th:checked="${callingCard.uccaDisclose eq 1}" >
+                        <input type="radio" name="uuinIsFreeze" lay-filter="uucoIsFreeze" value="0" title="未公开" th:checked="${callingCard.uccaDisclose eq 0}">
+                    </div>
+                </div>
+
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form'], function () {
+        var $ = layui.jquery,
+            form = layui.form;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'user/usr-user-info/';
+
+        form.val("formDemo", [[${callingCard}]]);
+
+        var uccaImage = [[${callingCard.uccaImage}]];
+        if(uccaImage!= null && uccaImage != ''){
+            $('#pic-img').attr('src', ctxPath+'file/access/'+uccaImage);
+        }
+
+    });
+</script>
+</body>
+</html>

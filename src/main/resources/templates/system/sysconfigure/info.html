@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>系统配置</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+    <style>
+        .layui-form-item .layui-input-company {
+            width: auto;padding-right: 10px;line-height: 38px;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <form class="layui-form" action="" lay-filter="formDemo">
+            <div class="layui-form layuimini-form">
+                <input type="hidden" name="sconId">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">网站标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sconWebsiteTitle" placeholder="请输入" class="layui-input">
+                        <tip>浏览器tab栏的标题，关键词放最前面，网站名称放后面，用英文“-”隔开</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">版权信息</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="sconCopyright" placeholder="请输入" class="layui-input">
+                        <tip>网站的版权信息，一般放于网页底部，例：Copyright© 2020 XXX版权所有</tip>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-submit lay-filter="saveBtn" shiro:hasPermission="sys:configure:edit"> 保存 </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form','notice'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            layer = layui.layer,
+            notice = layui.notice;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-configure/';
+
+        form.val("formDemo", [[${data}]]);
+
+        // 监听提交
+        form.on('submit(saveBtn)', function (res) {
+            var data = res.field;
+            Asurplus.post({
+                url: baseUrl + 'update',
+                data: JSON.stringify(data)
+            }, () => {
+                setTimeout(function () {
+                    window.location.reload();
+                }, 1500)
+            })
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

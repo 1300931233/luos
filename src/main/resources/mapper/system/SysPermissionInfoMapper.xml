@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.asurplus.console.system.mapper.SysPermissionInfoMapper">
+    <update id="deleteBatch">
+        Delete from sys_permission_info
+        where SPIN_ID IN ( ${ids} )
+        /* UPDATE sys_permission_info
+         SET SPIN_DEL_FLAG = 1
+         WHERE
+             SPIN_ID IN ( ${ids} )*/
+    </update>
+    <update id="updateStatusBatch">
+        UPDATE sys_permission_info
+        SET `SPIN_STATUS` = #{status}
+        WHERE
+            SPIN_ID IN ( ${ids} )
+    </update>
+    <select id="listPermissionInfoByUserId" resultType="com.asurplus.console.system.pojo.MenuPojo">
+        SELECT
+            a.SPIN_ID as id,
+            a.SPIN_PID as pid,
+            a.`SPIN_NAME` AS title,
+            a.SPIN_ICON as icon,
+            a.SPIN_HREF as href,
+            a.SPIN_TYPE as type,
+            a.SPIN_DESCRIPT as descript
+        FROM
+            sys_permission_info a
+        WHERE
+            a.SPIN_DEL_FLAG = 0
+            AND a.`SPIN_STATUS` = 0
+            AND a.SPIN_TYPE &lt; 2
+            AND EXISTS (
+            SELECT
+                rp.SRPE_PERMISSION_ID
+            FROM
+                sys_role_permission rp
+                LEFT JOIN sys_role ri ON ( rp.SRPE_ROLE_ID = ri.SROL_ID )
+            WHERE
+                ri.SROL_DEL_FLAG = 0
+                AND ri.`SROL_STATUS` = 0
+                AND EXISTS ( SELECT ur.SMRO_ID FROM sys_manager_role ur WHERE ur.SMRO_MANAGER_ID = #{id} AND rp.SRPE_ROLE_ID = ur.SMRO_ROLE_ID )
+            AND a.SPIN_ID = rp.SRPE_PERMISSION_ID
+            )
+        ORDER BY
+            a.SPIN_TYPE,
+            a.SPIN_PID,
+            a.SPIN_SORT
+    </select>
+
+    <select id="listPermissionForTree" resultType="com.asurplus.common.layui.LayuiTreePojo">
+        SELECT
+            a.SPIN_PID AS pid,
+            a.SPIN_ID AS id,
+            a.`SPIN_NAME` AS title,
+            a.SPIN_TYPE AS type,
+            ( CASE WHEN LENGTH(b.SRPE_ROLE_ID) > 0 THEN 1 ELSE 0 END ) AS checked
+        FROM
+            sys_permission_info a
+            LEFT JOIN sys_role_permission b ON ( a.SPIN_ID = b.SRPE_PERMISSION_ID AND b.SRPE_ROLE_ID     = ${id} )
+        WHERE
+            a.SPIN_DEL_FLAG = 0
+            AND a.`SPIN_STATUS` = 0
+        ORDER BY
+            a.SPIN_TYPE,
+            a.SPIN_PID,
+            a.SPIN_SORT
+    </select>
+    <select id="getChilderIds" resultType="java.lang.String">
+        SELECT
+            GROUP_CONCAT( a.SPIN_ID )
+        FROM
+            sys_permission_info a
+        WHERE
+            a.SPIN_DEL_FLAG = 0
+            AND a.SPIN_PID IN ( ${pid} )
+    </select>
+    <select id="listPermissionInfo" resultType="com.asurplus.console.system.pojo.MenuPojo">
+        SELECT
+            a.SPIN_ID AS id,
+            a.SPIN_PID AS pid,
+            a.`SPIN_NAME` AS title,
+            a.SPIN_ICON AS icon,
+            a.SPIN_HREF AS href,
+            a.SPIN_TYPE AS type,
+            a.SPIN_TARGET AS target
+        FROM
+            sys_permission_info a
+        WHERE
+            a.SPIN_DEL_FLAG = 0
+            AND a.`SPIN_STATUS` = 0
+            AND a.SPIN_TYPE &lt; 2
+        ORDER BY
+            a.SPIN_TYPE,
+            a.SPIN_PID,
+            a.SPIN_SORT
+    </select>
+</mapper>

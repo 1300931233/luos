@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>用户列表</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息(<b style="color: #1E9FFF;cursor: pointer">收起--展开</b>)</legend>
+            <form class="layui-form layui-form-pane" id="search-form" lay-filter="search-form" th:action="@{/sys/sys-manager/export}">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">名称</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="smanName" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">登录名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="smanAccount" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">电话</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="smanPhone" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">性别</label>
+                        <div class="layui-input-inline">
+                            <select name="smanSex">
+                                <option value="" selected>请选择</option>
+                                <option th:each="item : ${sex}" th:value="${item.sddeCode}" th:text="${item.sddeName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">状态</label>
+                        <div class="layui-input-inline">
+                            <select name="smanStatus">
+                                <option value="" selected>请选择</option>
+                                <option th:each="item : ${status}" th:value="${item.sddeCode}" th:text="${item.sddeName}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-sm layui-bg-blue" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索 </button>
+                        <button type="submit" class="layui-btn layui-btn-sm layui-btn-primary" lay-submit lay-filter="data-reset-btn"><i class="layui-icon">&#xe669;</i> 重 置 </button>
+                    </div>
+                </div>
+            </form>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add" shiro:hasPermission="sys:user:info:add"><i class="layui-icon">&#xe654;</i> 新增 </button>
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="export" shiro:hasPermission="sys:user:info:export"><i class="layui-icon">&#xe67d;</i> 导出 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            {{#
+            var html='<span class="toolbar_span">';
+                html+='<a src="javascript:void(0)" lay-event="delFlag" shiro:hasPermission="sys:user:info:del">删除</a>';
+                if(0 == d.status){
+                html+= '<a src="javascript:void(0)" lay-event="status1" shiro:hasPermission="sys:user:info:status"><div></div>禁用</a>'
+                }else if(1 == d.status){
+                html+= '<a src="javascript:void(0)" lay-event="status0" shiro:hasPermission="sys:user:info:status"><div></div>启用</a>'
+                }
+                html+='<a src="javascript:void(0)" lay-event="update" shiro:hasPermission="sys:user:info:edit"><div></div>编辑</a>';
+                html+='<a src="javascript:void(0)" lay-event="auth" shiro:hasPermission="sys:user:info:auth"><div></div>授权</a>';
+                html+='<a src="javascript:void(0)" lay-event="updatepassword" shiro:hasPermission="sys:user:info:editpassword"><div></div>修改密码</a>';
+                return html+'</span>'
+            }}
+        </script>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-manager/';
+
+        var currTable = Asurplus.tableRender({
+            table: table,
+            url: baseUrl + 'list',
+            cols: [
+                [
+                    {field: '', title: '', type:'numbers', templet: function (d) {return d.LAY_TABLE_INDEX + 1;}},
+                    {field: 'smanAccount', title: '登录账号'},
+                    {field: 'smanName', title: '名称'},
+                    {field: 'smanAvatar', title: '头像', templet: function (d) {
+                            if(!!d.smanAvatar){
+                                return '<img src="'+d.smanAvatar+'" class="avatar-show">';
+                            } else {
+                                return '';
+                            }
+                        }},
+                    {field: 'smanPhone', title: '电话'},
+                    {field: 'smanSexText', title: '性别'},
+                    {field: 'smanEmail', title: '邮箱'},
+                    {field: 'smanStatusText', title: '状态'},
+                    {field: 'smanCreateTime', title: '创建时间'},
+                    {title: '操作', minWidth: 250, toolbar: '#currentTableBar', align: "center", fixed: 'right'}
+                ]
+            ]
+        });
+
+        // 表头工具
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {
+                Asurplus.openLayer({
+                    title: '新增',
+                    content: baseUrl + 'add'
+                }, () => {
+                    currTable.reload();
+                })
+                return false;
+            }
+            // 导出
+            else if(obj.event === 'export'){
+                $('#search-form').submit();
+            }
+        });
+
+        // 表行工具
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'update') {
+                Asurplus.openLayer({
+                    title: '修改',
+                    content: baseUrl + 'update/' + data.smanId
+                }, () => {
+                    currTable.reload();
+                })
+                return false;
+            } else if (obj.event === 'auth') {
+                Asurplus.openLayer({
+                    title: '授权',
+                    content: baseUrl + 'auth/' + data.smanId
+                }, () => {
+                    currTable.reload();
+                })
+                return false;
+            } else if (obj.event === 'updatepassword') {
+                layer.prompt({
+                    formType: 0,
+                    value: [[${sysParamConf.spcoDefaultPassword}]],
+                    title: '请输入密码'
+                }, function(value, prompt, elem){
+                    Asurplus.get({
+                        url: baseUrl + 'updatepassword/' + data.smanId + "/" + value
+                    }, function () {
+                        layer.close(prompt)
+                        currTable.reload()
+                    });
+                });
+                return false;
+            } else if (obj.event === 'delFlag') {
+                layer.confirm('确认删除', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'delete/' + data.smanId
+                    }, function () {
+                        currTable.reload()
+                    });
+                });
+                return false;
+            } else if (obj.event === 'status0') {
+                layer.confirm('确认启用', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'updateStatus/' + data.smanId + '/0'
+                    }, function () {
+                        currTable.reload()
+                    });
+                });
+                return false;
+            } else if (obj.event === 'status1') {
+                layer.confirm('确认禁用', {
+                    btn: ['确定'],
+                    title: '提示'
+                }, function(){
+                    Asurplus.get({
+                        url: baseUrl + 'updateStatus/' + data.smanId + '/1'
+                    }, function () {
+                        currTable.reload()
+                    });
+                });
+                return false;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

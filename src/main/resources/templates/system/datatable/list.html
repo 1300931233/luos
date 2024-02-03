@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>数据表信息</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息(<b style="color: #1E9FFF;cursor: pointer">收起--展开</b>)</legend>
+            <form class="layui-form layui-form-pane" id="search-form" lay-filter="search-form" action="">
+                <div class="layui-form-item">
+                    <div class="layui-inline">
+                        <label class="layui-form-label">表名</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="tableName" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <label class="layui-form-label">表说明</label>
+                        <div class="layui-input-inline">
+                            <input type="text" name="tableComment" autocomplete="off" class="layui-input" placeholder="请输入">
+                        </div>
+                    </div>
+                    <div class="layui-inline">
+                        <button type="submit" class="layui-btn layui-btn-sm layui-bg-blue" lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索 </button>
+                        <button type="submit" class="layui-btn layui-btn-sm layui-btn-primary" lay-submit lay-filter="data-reset-btn"><i class="layui-icon">&#xe669;</i> 重 置 </button>
+                    </div>
+                </div>
+            </form>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+                <button class="layui-btn layui-btn-normal layui-btn-sm data-add-btn" lay-event="add" shiro:hasPermission="sys:datatable:add"><i class="layui-icon">&#xe654;</i> 新增 </button>
+            </div>
+        </script>
+
+        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+
+        <script type="text/html" id="currentTableBar">
+            <div class="toolbar_span">
+                <a src="javascript:void(0)" lay-event="delFlag" shiro:hasPermission="sys:datatable:del">删除</a>
+                <a src="javascript:void(0)" lay-event="update" shiro:hasPermission="sys:datatable:edit"><div></div>编辑</a>
+                <a src="javascript:void(0)" lay-event="detail" shiro:hasPermission="sys:datatable:detail"><div></div>详情</a>
+                <a src="javascript:void(0)" lay-event="backups" shiro:hasPermission="sys:datatable:backups"><div></div>备份</a>
+            </div>
+        </script>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+<script th:src="@{/layuimini/js/lay-config.js}" charset="utf-8"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    layui.use(['form', 'table', 'miniTab'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            miniTab = layui.miniTab,
+            table = layui.table;
+
+        var ctxPath = /*[[@{/}]]*/;
+        var baseUrl = ctxPath + 'sys/sys-data-table/';
+
+        var currTable = Asurplus.tableRender({
+            table: table,
+            url: baseUrl + 'list',
+            cols: [
+                [
+                {field: '', title: '', type:'numbers', templet: function (d) {return d.LAY_TABLE_INDEX + 1;}},
+                {field: 'tableName', title: '表名'},
+                {field: 'tableComment', title: '表说明'},
+                {field: 'engine', title: '存储引擎'},
+                {field: 'tableCollation', title: '编码格式'},
+                {field: 'tableRows', title: '数据量'},
+                {field: 'indexLength', title: '索引大小'},
+                {field: 'createTime', title: '创建时间'},
+                {title: '操作', minWidth: 150, toolbar: '#currentTableBar', align: "center", fixed: 'right'}
+            ]
+            ]
+        });
+
+        // 表头工具
+        table.on('toolbar(currentTableFilter)', function (obj) {
+            if (obj.event === 'add') {
+                return false;
+            }
+        });
+
+        // 表行工具
+        table.on('tool(currentTableFilter)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'update') {
+                return false;
+            } else if (obj.event === 'detail') {
+                miniTab.openNewTabByIframe({title: '字段信息', href: ctxPath + 'sys/sys-data-table-column/init/' + data.tableName});
+                return false;
+            } else if (obj.event === 'delFlag') {
+                return false;
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>条形码</title>
+    <link rel="icon" th:href="@{/img/icon.ico}">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/public.css}" media="all">
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="ok-body">
+            <blockquote class="layui-elem-quote">
+                <p>创建条形码</p>
+            </blockquote>
+            <pre>
+layui.use(["barcode"], function () {
+    let $ = layui.jquery;
+    <br/>
+    $("#barcode").barcode("153510264086cc8e", "code128", {
+        output: "css",       // 渲染方式 css|bmp|svg|canvas
+        //bgColor: "#ff0000", // 条码背景颜色
+        //color: "#00ff00",   // 条码颜色
+        barWidth: 1,        // 单条条码宽度
+        barHeight: 30,     // 单体条码高度
+        // moduleSize: 10,   // 条码大小
+        // posX: 10,        // 条码坐标X
+        // posY: 5,         // 条码坐标Y
+        showHRI: true,    // 是否在条码下方显示内容
+        addQuietZone: false  // 是否添加空白区（内边距）
+    });
+});
+        </pre>
+            <button type="button" class="layui-btn" id="try">试一下</button>
+            <br/>
+            <br/>
+            <div id="barcode"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    layui.use(["code", "barcode"], function () {
+        let code = layui.code;
+        let $ = layui.jquery;
+
+        code({
+            elem: "pre",
+            title: "代码示例",
+            about: false
+        });
+
+        $("#try").click(function () {
+            $("#barcode").barcode("153510264086cc8e", "code128", {
+                output: "css",       // 渲染方式 css|bmp|svg|canvas
+                //bgColor: "#ff0000", // 条码背景颜色
+                //color: "#00ff00",   // 条码颜色
+                barWidth: 1,        // 单条条码宽度
+                barHeight: 30,     // 单体条码高度
+                // moduleSize: 10,   // 条码大小
+                // posX: 10,        // 条码坐标X
+                // posY: 5,         // 条码坐标Y
+                showHRI: true,    // 是否在条码下方显示内容
+                addQuietZone: false  // 是否添加空白区（内边距）
+            });
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+ <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title th:text="${'登录-' + sysConfig.sconWebsiteTitle}"></title>
+    <link rel="stylesheet" th:href="@{/css/CT_login.css}">
+    <link rel="stylesheet" th:href="@{/css/CT_common.css}">
+    <link rel="stylesheet" th:href="@{/css/chunk-vendors.82511ce9.css}">
+    <link rel="stylesheet" th:href="@{/css/app.61c14a19.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/layui/css/layui.css}" media="all">
+    <link rel="stylesheet" th:href="@{/layuimini/css/layuimini.css}" media="all">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <!--fa 图标库-->
+    <link rel="stylesheet" th:href="@{/font-awesome/css/font-awesome.css}" media="all">
+</head>
+<body>
+<div data-v-375e94fe="">
+    <div data-v-375e94fe="" class="bodyContent" style="left: 0px; top: 0px;">
+        <div data-v-375e94fe="">
+            <header class="dx_header">
+                <!--<img src="img/logo.png" >-->
+                <div class="logo">数字名片</div>
+            </header>
+            <div class="dx_login">
+                <div class="dx_login_box">
+                    <div id="loginForm">
+                        <h2 class="title">用户登录</h2><span id="errorShower"></span>
+                        <div class="dx_form_input">
+                            <div class="el-input">
+                                <input type="text" maxlength="11" autocomplete="off" placeholder="手机号/账号" class="el-input__inner" id="j_username">
+                            </div>
+                        </div>
+                        <div class="dx_form_input">
+                            <div class="el-input">
+                                <input type="password" maxlength="20" autocomplete="off" placeholder="登录密码" class="el-input__inner" id="j_password">
+                                <div class="icon-css-view">
+                                    <i style="" class="fa fa-eye-slash" id="iconShowView" ></i>
+                                    <i style="display: none"  class="fa fa-eye" id="iconHiddenView" ></i>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="dx_form_input">
+                            <div class="el-input">
+                                <input type="text" autocomplete="off" placeholder="验证码" class="el-input__inner" id="j_code" style="width: 65%"  >
+                                <img th:src="@{/kaptcha/kaptcha-image}" id="ver_btn" onclick="this.src=this.src+'?c='+Math.random();" style="cursor: pointer; height: 100%; width: 35%; position: absolute;" alt="看不清? 点击刷新" title="看不清? 点击刷新" />
+                            </div>
+                        </div>
+                        <div class="dx_form_input">
+                            <div class="el-input">
+                                <input type="checkbox" id="j_remember" style="width: 14px;height: 14px;cursor: pointer;vertical-align: middle;">
+                                <span>下次自动登录</span>
+                            </div>
+                        </div>
+                        <div class="dx_form_input">
+                            <button type="button" class="el-button buttonR" id="btn_login" style="width: 100%;">
+                                <span id="btn_msg">登 录</span>&nbsp;
+                                <i class="layui-icon layui-anim layui-anim-rotate layui-anim-loop" id="btn_load" style="display: none">&#xe63d;</i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer class="dx_footer">
+                <div class="liantong">
+                    <ul class="f_enterprise">
+                    </ul>
+                    <p class="dx_copy" th:if="${not #strings.isEmpty(sysConfig.sconCopyright)}" th:text="${sysConfig.sconCopyright}"></p>
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+<!--初始化加载层-->
+<div class="layuimini-loader">
+    <div class="layuimini-loader-inner"></div>
+    <p style="position: relative;top: 55%;width: 100%;text-align: center;color: #fff;font-weight: bold">项目正在加载中，请耐心等待 . . .</p>
+</div>
+<form id="succ_from" th:action="@{/success}" method="post" style="display: none"></form>
+
+<script type="text/javascript" th:src="@{/js/jquery-3.2.0.min.js}"></script>
+<script type="text/javascript" th:src="@{/layui/layui.js}"></script>
+<script type="text/javascript" th:src="@{/js/common-table.js}"></script>
+
+<script type="text/javascript" th:inline="javascript">
+
+    var ctxPath = /*[[@{/}]]*/;
+    layui.use(['notice', 'layNotify','form'], function () {
+
+        var $ = layui.jquery,
+            notice = layui.notice,
+            form = layui.form,
+            layNotify = layui.layNotify;
+
+        // 登录过期的时候，跳出ifram框架
+        if (top.location != self.location) top.location = self.location;
+
+        // 初始化加载
+        setTimeout(function () {
+            $('.layuimini-loader').fadeOut();
+        }, 500);
+
+        // 锁屏关闭
+        window.sessionStorage.setItem("lockcms", false);
+
+        $('#btn_login').click(function () {
+        var j_username = document.getElementById('j_username').value;
+        if (!j_username) {
+            notice.warning('请输入登录账号');
+            document.getElementById("j_username").focus();
+            return false;
+        }
+        var j_password = document.getElementById('j_password').value;
+        if (!j_password) {
+            notice.warning('请输入登录密码');
+            document.getElementById("j_password").focus();
+            return false;
+        }
+        var j_code = document.getElementById('j_code').value;
+        if (!j_code) {
+            notice.warning('请输入验证码');
+            document.getElementById("j_code").focus();
+            return false;
+        }
+        var j_remember = document.getElementById('j_remember').checked;
+        var param = {
+            "account": j_username,
+            "password": j_password,
+            "resCode": j_code,
+            "rememberMe": j_remember
+        };
+        logining();
+        Asurplus.post({
+            url: ctxPath + 'doLogin',
+            data: JSON.stringify(param),
+            succMsg: true
+        }, function (res) {
+            layNotify.notice({
+                title: "登录提示",
+                type: "success",
+                message: res.msg
+            });
+            setTimeout(function () {
+                document.getElementById('succ_from').submit();
+            }, 1500);
+        }, function (res) {
+            loginend();
+            if (703 != res.code) {
+                document.getElementById("ver_btn").click();
+                document.getElementById("j_code").value = '';
+            }
+        });
+        });
+
+        // 回车登录
+        $('body').keydown(function () {
+            if(13 == event.keyCode) {
+                $('#btn_login').trigger('click');
+            }
+        });
+
+        function logining(){
+            document.getElementById("btn_login").disabled = true;
+            document.getElementById("btn_msg").innerText = '登 录 中';
+            document.getElementById("btn_load").style.display="inline-block";
+        }
+
+        function loginend(){
+            document.getElementById("btn_login").disabled = false;
+            document.getElementById("btn_msg").innerText = '登 录';
+            document.getElementById("btn_load").style.display="none";
+        }
+
+        // 是否显示密码
+        var password = $("#j_password");
+        $("#iconShowView").on('click', function(e){
+            password.attr("type","text");
+            $("#iconShowView").css("display","none");
+            $("#iconHiddenView").css("display","block");
+            //form.render();
+        });
+        $("#iconHiddenView").on('click', function(e){
+            password.attr("type","password");
+            $("#iconShowView").css("display","block");
+            $("#iconHiddenView").css("display","none");
+            //form.render();
+        });
+    });
+
+</script>
+</body>
+
+</html>
